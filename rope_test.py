@@ -82,19 +82,31 @@ q_embed, k_embed, attention_scores = complex_rope_example()
 
 # 分析注意力模式
 def analyze_attention_pattern(attention_scores):
-    """分析注意力分数的模式"""
-    # 对每个头的注意力分数进行softmax
-    attention_probs = torch.nn.functional.softmax(attention_scores, dim=-1)
+    # 计算softmax得到注意力概率分布
+    attention_probs = torch.softmax(attention_scores, dim=-1)
 
+    # 基础统计信息
     print("\n注意力模式分析:")
-    print("平均注意力分数:", attention_probs.mean().item())
-    print("最大注意力分数:", attention_probs.max().item())
-    print("最小注意力分数:", attention_probs.min().item())
+    print(f"平均注意力分数: {attention_scores.mean().item()}")
+    print(f"最大注意力分数: {attention_scores.max().item()}")
+    print(f"最小注意力分数: {attention_scores.min().item()}")
 
-    # 分析相对位置的注意力强度
-    for i in range(attention_probs.size(1)):  # 对每个位置
-        print(f"\n位置 {i} 的注意力分布:")
+    # 获取序列长度
+    seq_len = attention_scores.size(2)
+
+    # 打印每个位置的注意力分布
+    print("\n各位置的注意力分布:")
+    for i in range(seq_len):  # 只遍历实际的序列长度
+        print(f"位置 {i} 的注意力分布:")
         print(attention_probs[0, 0, i])  # 第一个batch、第一个head
+
+    # 添加更多分析
+    print("\n注意力集中度分析:")
+    max_probs, max_pos = torch.max(attention_probs[0, 0], dim=-1)
+    for i in range(seq_len):
+        print(
+            f"位置 {i} 最关注的位置: {max_pos[i].item()}, 注意力强度: {max_probs[i].item():.4f}"
+        )
 
 
 analyze_attention_pattern(attention_scores)
