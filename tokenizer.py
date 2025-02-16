@@ -3,7 +3,10 @@ import pandas as pd
 from tokenizers import Tokenizer
 from tokenizers.models import BPE
 from tokenizers.trainers import BpeTrainer
-from transformers import Qwen2ForCausalLM 
+from transformers import Qwen2ForCausalLM
+from typing import Optional
+import torch
+import torch.nn as nn
 
 tokenizer = Tokenizer(BPE(unk_token="[UNK]"))
 
