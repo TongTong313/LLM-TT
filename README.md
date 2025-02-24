@@ -1,1 +1,19 @@
-# 从零实现语言大模型
+# 童发发的大模型学习之旅
+
+作者：Tong Tong
+B站首页：[Double童发发](https://space.bilibili.com/323109608)
+
+## 1. 项目简介
+童发发学习大模型的过程记录，会不断更新，包含代码、部分jupyter notebook讲稿等。
+
+## 2. 项目结构
+```
+- README.md 说明文档
+- bilibili B站视频对应的jupyter讲稿
+```
+
+## 3. 更新日志
+- 2025.02.25
+  - 更新README.md
+  - 在`bilibili`文件夹中增加旋转位置编码jupyter讲稿`rope.ipynb`
+  - 公开本项目
