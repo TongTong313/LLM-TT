@@ -1,6 +1,7 @@
 # 童发发的大模型学习之旅
 
 作者：Tong Tong
+
 B站首页：[Double童发发](https://space.bilibili.com/323109608)
 
 ## 1. 项目简介
