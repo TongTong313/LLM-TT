@@ -19,6 +19,5 @@ empty_text = df['text'].apply(lambda x: x == '')
 # 删除df中text为空字符串的行
 df = df[~empty_text]
 
+# 查看df的前5行
 print(df.head())
-
-trainer.train(df['text'])
