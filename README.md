@@ -11,6 +11,7 @@ B站首页：[Double童发发](https://space.bilibili.com/323109608)
 ```
 - README.md 说明文档
 - bilibili B站视频对应的jupyter讲稿
+  - rope.ipynb 旋转位置编码
 ```
 
 ## 3. 更新日志
