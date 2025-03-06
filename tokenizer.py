@@ -46,9 +46,9 @@ a = int(0xe4)
 b = int(0xb8)
 c = int(0xad)
 
-print(alphabet[a], alphabet[b], alphabet[c])
+# print(alphabet[a], alphabet[b], alphabet[c])
 
-print(alphabet)
+# print(alphabet)
 
 
 # 通过这个代码进行转化
@@ -58,6 +58,7 @@ def bytes_to_unicode():
                                                  ord("¬") + 1)) +
           list(range(ord("®"),
                      ord("ÿ") + 1)))
+    print(bs)
     cs = bs[:]
     n = 0
     for b in range(2**8):
