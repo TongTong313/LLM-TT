@@ -20,7 +20,7 @@ trainer = BpeTrainer(
 
 # 随便给一段话
 # 创建一段包含需要标准化的中文文本
-text = "中国是一个伟大的国家，它有着悠久的历史。我今天心情很好，想学习一会"
+text = "我是，中国"
 # text = "hello world, I'm a student. I'm 20 years old"
 
 pattern = "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+"
@@ -31,14 +31,45 @@ pre_tokenizer_bytelevel = ByteLevel(add_prefix_space=False,
 
 pre_tokenizer = Sequence([pre_tokenizer_split, pre_tokenizer_bytelevel])
 
+# 这个打印结果是随机的！！！
+alphabet = pre_tokenizer_bytelevel.alphabet()
+
 text_1 = pre_tokenizer.pre_tokenize_str(text)
 print(text_1)
 
-# 表示16进制e4 b8 ad Unicode字符就是ä¸Ń  ä ¸
-a = 0xe4
-b = 0xb8
-c = 0xad
-print(chr(a), chr(b), chr(c))
+# UTF-8编码的文本
+text_2 = text.encode('utf-8')
+print(text_2)
+
+# 用alphabet对文本进行编码
+a = int(0xe4)
+b = int(0xb8)
+c = int(0xad)
+
+print(alphabet[a], alphabet[b], alphabet[c])
+
+print(alphabet)
+
+
+# 通过这个代码进行转化
+def bytes_to_unicode():
+    bs = (list(range(ord("!"),
+                     ord("~") + 1)) + list(range(ord("¡"),
+                                                 ord("¬") + 1)) +
+          list(range(ord("®"),
+                     ord("ÿ") + 1)))
+    cs = bs[:]
+    n = 0
+    for b in range(2**8):
+        if b not in bs:
+            bs.append(b)
+            cs.append(2**8 + n)
+            n += 1
+    cs = [chr(n) for n in cs]
+    return dict(zip(bs, cs))
+
+
+print(bytes_to_unicode()[int(0xad)])
 
 # normalizer = NFC()
 
