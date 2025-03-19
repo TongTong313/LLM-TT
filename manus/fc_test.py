@@ -1,5 +1,5 @@
 # 测试大模型function calling
-from openai import OpenAI, AsyncOpenAI
+from openai import OpenAI, AsyncOpenAI, AsyncStream
 import os
 import asyncio
 
@@ -31,12 +31,8 @@ async def ask(query):
 
 
 async def main():
-    querys = [
-        "你好，请帮我写一个冒泡排序的代码",
-        "你好，请帮我写一个快速排序的代码",
-    ]
-    tasks = [ask(query) for query in querys]
-    await asyncio.gather(*tasks)
+    querys = "你好，请帮我写一个快速排序的代码"
+    await ask(querys)
 
 
 if __name__ == "__main__":
