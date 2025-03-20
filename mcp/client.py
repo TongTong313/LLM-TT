@@ -4,7 +4,8 @@ from typing import Optional
 from contextlib import AsyncExitStack
 from mcp import StdioServerParameters, ClientSession
 from mcp.client.stdio import stdio_client
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
+import os
 
 
 class MCPClient:
@@ -13,6 +14,9 @@ class MCPClient:
         # Initialize session and client objects
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
+        self.qwen = AsyncOpenAI(
+            api_key=os.getenv("DASHSCOPE_API_KEY"),
+            base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
         # self.anthropic = Anthropic()
 
     async def connect_to_mcp_server(self, server_script_path: str):
@@ -60,9 +64,22 @@ class MCPClient:
         """
         messages = [{"role": "user", "content": query}]
 
+        # 这里客户端向服务器发送一个请求获取工具列表，服务端返回工具列表
         response = await self.session.list_tools()
         available_tools = [{
             "name": tool.name,
             "description": tool.description,
             "input_schema": tool.inputSchema
         } for tool in response.tools]
+
+        # 初始化OpenAI的API
+        response = await self.qwen.chat.completions.create(
+            model="qwen-plus",
+            messages=messages,
+            tools=available_tools,
+            tool_choice="auto",
+            stream=True)
+
+        # 获取流式response的调用工具信息，然后拼接
+        async for chunk in response:
+            if chunk.choices[0].message.tool_calls:
