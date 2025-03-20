@@ -1,9 +1,9 @@
 from mcp.server import FastMCP
 
-mymcp = FastMCP(name='demo', log_level='DEBUG')
+mcp = FastMCP(name='demo', log_level='DEBUG')
 
 
-@mymcp.tool()
+@mcp.tool()
 def add(a: int, b: int) -> int:
     """Add two numbers together"""
     return a + b
@@ -16,4 +16,4 @@ def add(a: int, b: int) -> int:
 #     return f"Hello, {name}!"
 
 if __name__ == "__main__":
-    mymcp.run(transport="sse")
+    mcp.run(transport="sse")
