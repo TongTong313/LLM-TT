@@ -13,6 +13,7 @@ parameters = meta.arg_model.model_json_schema()
 
 # print(parameters)
 
+# 可以把参数属性带出来，如果增加注释的解析，效果会更好
 globalns = getattr(add, "__globals__", {})
 print(globalns['parameters'])
 
