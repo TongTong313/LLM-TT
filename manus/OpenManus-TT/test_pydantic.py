@@ -5,7 +5,10 @@ import json
 
 class LLM:
 
-    def __init__(self, model: str = "gpt-3.5-turbo", temperature: float = 0.5):
+    def __init__(self,
+                 model: str = "gpt-3.5-turbo",
+                 temperature: float = 0.5,
+                 **data):
         self.model = model
         self.temperature = temperature
 
@@ -17,6 +20,9 @@ class User(BaseModel):
     # llm: LLM = Field(default_factory=LLM, description="The LLM model to use")
 
     tool_choices: Literal["none", "auto", "required"] = "auto"
+
+    # def __init__(self, name: str):
+    #     print(name)
 
     class Config:
         arbitrary_types_allowed = True
@@ -68,16 +74,22 @@ class Message(BaseModel):
 
 
 if __name__ == "__main__":
-    # user = User(name="John", age=20, tool_choices="auto")
+    # user = User(name="John", age=20)
     # print(user.model_json_schema())
-    llm = LLM()
-    print(llm)
+    # llm = LLM()
+    # print(llm)
 
-    msg1 = Message(role="user", content="Hello, world!")
-    msg2 = Message(role="assistant", content="Hello, too!")
-    print(msg1 + msg2)
+    # msg1 = Message(role="user", content="Hello, world!")
+    # msg2 = Message(role="assistant", content="Hello, too!")
+    # print(msg1 + msg2)
 
-    print(msg1.model_dump())
-    print(type(msg1.model_dump_json()))
+    # print(msg1.model_dump())
+    # print(type(msg1.model_dump_json()))
 
-    print(msg1.to_dict())
+    # print(msg1.to_dict())
+
+    # llm = LLM(model="gpt-3.5-turbo", temperature=0.5)
+    # print(llm)
+
+    user = User(name="John", age=20)
+    print(user)

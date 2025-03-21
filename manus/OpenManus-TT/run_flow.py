@@ -18,7 +18,7 @@ async def run_flow():
             if prompt.lower() == "exit":
                 logger.info("Goodbye!")
                 break
-
+            # 创建flow：入参flow_type, agents，输出是PlanningFlow类
             flow = FlowFactory.create_flow(
                 flow_type=FlowType.PLANNING,
                 agents=agents,

@@ -13,22 +13,29 @@ class FlowType(str, Enum):
 
 class BaseFlow(BaseModel, ABC):
     """Base class for execution flows supporting multiple agents"""
+    # BaseFlow钟可以包含多个智能体，多智能体系统？
 
+    # 智能体
     agents: Dict[str, BaseAgent]
+    # 工具
     tools: Optional[List] = None
+    # 主智能体
     primary_agent_key: Optional[str] = None
 
     class Config:
         arbitrary_types_allowed = True
 
-    def __init__(
-        self, agents: Union[BaseAgent, List[BaseAgent], Dict[str, BaseAgent]], **data
-    ):
+    def __init__(self, agents: Union[BaseAgent, List[BaseAgent],
+                                     Dict[str, BaseAgent]], **data):
+        # agents支持BaseAgent, List[BaseAgent], Dict[str, BaseAgent]三种格式，最后都会格式化为Dict[str, BaseAgent]
         # Handle different ways of providing agents
         if isinstance(agents, BaseAgent):
             agents_dict = {"default": agents}
         elif isinstance(agents, list):
-            agents_dict = {f"agent_{i}": agent for i, agent in enumerate(agents)}
+            agents_dict = {
+                f"agent_{i}": agent
+                for i, agent in enumerate(agents)
+            }
         else:
             agents_dict = agents
 
@@ -39,6 +46,7 @@ class BaseFlow(BaseModel, ABC):
             data["primary_agent_key"] = primary_key
 
         # Set the agents dictionary
+        # 这里data是字典入参格式
         data["agents"] = agents_dict
 
         # Initialize using BaseModel's init
@@ -59,7 +67,7 @@ class BaseFlow(BaseModel, ABC):
 
     @abstractmethod
     async def execute(self, input_text: str) -> str:
-        """Execute the flow with given input"""
+        """Execute the flow with given input，抽象方法必须用子类实现"""
 
 
 class PlanStepStatus(str, Enum):
