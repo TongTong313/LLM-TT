@@ -21,8 +21,8 @@ class User(BaseModel):
 
     tool_choices: Literal["none", "auto", "required"] = "auto"
 
-    # def __init__(self, name: str):
-    #     print(name)
+    def __init__(self, name: str, **data):
+        print(name)
 
     class Config:
         arbitrary_types_allowed = True
