@@ -15,7 +15,8 @@ B站首页：[Double童发发](https://space.bilibili.com/323109608)
 - MCP 测试MCP协议
   - server.py MCP服务
 - manus 从零开始构建manus！
-  - tools 工具
+  - agent.py 智能体
+  - tool_manager.py 工具管理器
   - fc_test.py 测试大模型function calling
 ```
 

@@ -1,55 +1,8 @@
 from pydantic import BaseModel, Field
-from typing import Callable, get_type_hints, Dict, Any, Type, Optional
+from typing import Callable, get_type_hints, Dict, Any, Type, Optional, List
 import random
 import inspect
 import warnings
-
-
-class ToolManager:
-    """工具管理类，管理所有的工具，期望具备的功能：
-    1. 工具注册：让工具管理器感知到，包括生成对应的schema保存起来
-    2. 工具执行：执行工具，并返回结果
-    3. 工具删除：删除工具
-    """
-
-    # 初始化类
-    def __init__(self):
-        self._tools: Dict[str, Tool] = {}  # 每一个工具都是Tool实例
-
-    # 工具注册：让工具管理器感知到
-    def register_tool(self, func: Callable, tool_name: Optional[str] = None):
-        """注册工具
-
-        Args:
-            func (Callable): 工具函数
-            tool_name (Optional[str]): 工具名称，默认是函数名
-        """
-        # 生成工具的名称，没有名称给一个默认的名称
-        if tool_name is None:
-            tool_name = func.__name__
-        elif tool_name in self._tools:
-            warnings.warn(f"工具名称{tool_name}已存在，将覆盖原有工具")
-
-        # 生成工具的实例
-        tool = Tool(func=func, tool_name=tool_name)
-        self._tools[tool_name] = tool
-
-    # 工具执行：执行工具，并返回结果
-    def execute_tool(self, tool_name: str, *args, **kwargs):
-        """执行工具
-
-        Args:
-            name (str): 工具名称
-            *args: 工具入参
-            **kwargs: 工具入参
-
-        Returns:
-            Any: 工具返回结果
-        """
-        if tool_name not in self._tools:
-            raise ValueError(f"工具名称{tool_name}不存在")
-
-        return self._tools[tool_name].execute(*args, **kwargs)
 
 
 class Tool:
@@ -62,13 +15,13 @@ class Tool:
             self.tool_name = func.__name__
         else:
             self.tool_name = tool_name
-        self.tool_schema = self.get_tool_schema(func)
+        self.tool_schema = self._get_tool_schema(func)
 
     def execute(self, *args, **kwargs):
         """执行工具"""
         return self.func(*args, **kwargs)
 
-    def get_tool_schema(self, func: Callable) -> dict:
+    def _get_tool_schema(self, func: Callable) -> dict:
         """tool都是以代码函数的形式存在，但大模型并不能直接认识“代码”，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
         
         Args:
@@ -229,6 +182,79 @@ class Tool:
                 return description
 
         return ""
+
+
+class ToolManager:
+    """工具管理类，管理所有的工具，期望具备的功能：
+    1. 工具注册：让工具管理器感知到，包括生成对应的schema保存起来
+    2. 工具执行：执行工具，并返回结果
+    3. 工具删除：删除工具
+    4. 工具列表：获取所有工具列表
+    """
+
+    # 初始化类
+    def __init__(self):
+        self._tools: Dict[str, Tool] = {}  # 每一个工具都是Tool实例
+
+    # 工具注册：让工具管理器感知到
+    def register_tool(self, func: Callable, tool_name: Optional[str] = None):
+        """注册工具
+
+        Args:
+            func (Callable): 工具函数
+            tool_name (Optional[str]): 工具名称，默认是函数名
+        """
+        # 生成工具的名称，没有名称给一个默认的名称
+        if tool_name is None:
+            tool_name = func.__name__
+        elif tool_name in self._tools:
+            warnings.warn(f"工具名称{tool_name}已存在，将覆盖原有工具")
+
+        # 生成工具的实例
+        tool = Tool(func=func, tool_name=tool_name)
+        self._tools[tool_name] = tool
+
+    # 工具执行：执行工具，并返回结果
+    def execute_tool(self, tool_name: str, *args, **kwargs):
+        """执行工具
+
+        Args:
+            name (str): 工具名称
+            *args: 工具入参
+            **kwargs: 工具入参
+
+        Returns:
+            Any: 工具返回结果
+        """
+        if tool_name not in self._tools:
+            raise ValueError(f"工具名称{tool_name}不存在")
+
+        return self._tools[tool_name].execute(*args, **kwargs)
+
+    # 工具删除：删除工具
+    def delete_tool(self, tool_name: str) -> bool:
+        """删除工具
+
+        Args:
+            tool_name (str): 工具名称
+        
+        Returns:
+            bool: 是否删除成功
+        """
+        if tool_name in self._tools:
+            del self._tools[tool_name]
+            return True
+
+        return False
+
+    # 工具列表：获取所有工具列表
+    def get_tool_list(self) -> List[Tool]:
+        """获取所有工具，并返回列表
+
+        Returns:
+            List[Tool]: 工具列表
+        """
+        return list(self._tools.values())
 
 
 # 模拟天气查询工具。返回结果示例：“北京今天是雨天。”
