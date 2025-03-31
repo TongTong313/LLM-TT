@@ -8,7 +8,6 @@ import warnings
 class Tool:
     """工具描述类别，所有的工具都属于这个类
     """
-
     def __init__(self, func: Callable, tool_name: Optional[str] = None):
         self.func = func
         if tool_name is None:
@@ -74,11 +73,11 @@ class Tool:
             }
         }
 
-        # 获取函数签名，可以提取入参名称和类型信息和出参的类型信息
+        # 获取函数签名：可以提取入参名称和类型信息和出参的类型信息
         # 例如：(location: str, units: Optional[str] = 'celsius') -> str
         sig = inspect.signature(func)
 
-        # 获取函数参数类型提示，一个字典，分别描述函数的每个入参的类型和返回值的类型
+        # 获取函数参数类型提示：一个字典，分别描述函数的每个入参的类型和返回值的类型
         # 例如：{'location': <class 'str'>, 'return': <class 'str'>}
         type_hints = get_type_hints(func)
 
@@ -89,9 +88,8 @@ class Tool:
 
             # 根据参数名称获取参数类型
             param_type = type_hints.get(param_name)
-            print(param.default)
 
-            # 初始的，并没有考虑可选类型
+            # 初始的类型，并没有考虑可选情况
             type_ori = self._python_type_to_schema_type(param_type)
 
             # 检查是否有默认值，有默认值就是可选的
