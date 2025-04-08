@@ -8,6 +8,7 @@ import warnings
 class Tool:
     """工具描述类别，所有的工具都属于这个类
     """
+
     def __init__(self, func: Callable, tool_name: Optional[str] = None):
         self.func = func
         if tool_name is None:
@@ -202,6 +203,7 @@ class ToolManager:
             func (Callable): 工具函数
             tool_name (Optional[str]): 工具名称，默认是函数名
         """
+        # 后面可能会增加工具是类的可能性，现在默认就是一个函数
         # 生成工具的名称，没有名称给一个默认的名称
         if tool_name is None:
             tool_name = func.__name__

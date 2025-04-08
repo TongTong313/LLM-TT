@@ -1,15 +1,20 @@
 # 智能体类，智能体包含感知、规划、工具、记忆等组件，一个一个来实现
 from typing import List, Dict, Any, Optional
-from tool_manager import ToolManager
-from memory_manager import MemoryManager
+from .memory_manager import MemoryManager
+from .tool_manager import ToolManager
 import json
+from openai import AsyncOpenAI
+import os
 
 
 class Agent:
-    """智能体类，负责与大模型交互并管理工具和记忆"""
+    """智能体类，由工具、记忆、规划、感知等模块构建，咱们一个一个来实现
+    v0.1：实现一个最简单的智能体，只包含工具模块和记忆模块，具备React框架，先think，再act
+    """
+
     def __init__(self):
         self.tool_manager = ToolManager()
-        self.memory = Memory()
+        self.memory_manager = MemoryManager()
 
     async def chat(self,
                    message: str,

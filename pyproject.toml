@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "llm_tt"
+version = "0.1.0"
+description = "童发发大模型学习之旅"
+authors = ["Tong Tong <tongtong950313@163.com>"]
+readme = "README.md"
+packages = [
+    {include = "manus", from = "src"},
+    {include = "mcp", from = "src"}
+]
+license = "MIT"
+homepage = "https://github.com/TongTong313/LLM-TT"
+repository = "https://github.com/TongTong313/LLM-TT.git"
+keywords = ["LLM", "AI", "agent"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api" 
