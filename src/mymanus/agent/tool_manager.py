@@ -7,6 +7,10 @@ import warnings
 
 class Tool:
     """工具描述类别，所有的工具都属于这个类
+    
+    Args:
+        func (Callable): 工具函数
+        tool_name (str, optional): 工具名称，默认是函数名
     """
 
     def __init__(self, func: Callable, tool_name: Optional[str] = None):
@@ -21,14 +25,14 @@ class Tool:
         """执行工具"""
         return self.func(*args, **kwargs)
 
-    def _get_tool_schema(self, func: Callable) -> dict:
-        """tool都是以代码函数的形式存在，但大模型并不能直接认识“代码”，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
+    def _get_tool_schema(self, func: Callable) -> Dict:
+        """tool都是以函数代码的形式存在，但大模型并不能直接认识“代码”，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
         
         Args:
             func (Callable): 工具函数
 
         Returns:
-            dict: 工具schema
+            Dict: 工具schema
 
         openai接口的工具schema样式：
         {
@@ -67,7 +71,7 @@ class Tool:
                 "parameters": {
                     "type": "object",
                     "properties": {},  # 后面获取工具入参
-                    "required": [],  # 后面获取工具入参
+                    "required": [],  # 一旦strict=True，所有变量都是required的
                     "additionalProperties": False
                 },
                 "strict": True
@@ -77,16 +81,16 @@ class Tool:
         # 获取函数签名：可以提取入参名称和类型信息和出参的类型信息
         # 例如：(location: str, units: Optional[str] = 'celsius') -> str
         sig = inspect.signature(func)
+        print(sig.parameters.items())
 
         # 获取函数参数类型提示：一个字典，分别描述函数的每个入参的类型和返回值的类型
         # 例如：{'location': <class 'str'>, 'return': <class 'str'>}
         type_hints = get_type_hints(func)
 
-        # 获取函数参数，一个一个参数来
+        # 获取函数参数，一个一个【入参】来
         for param_name, param in sig.parameters.items():
             # param_name: 参数名称
-            # param：参数名称：类型
-
+            # param：参数名称：类型 = 默认值（如果有）  <class 'inspect.Parameter'>
             # 根据参数名称获取参数类型
             param_type = type_hints.get(param_name)
 
