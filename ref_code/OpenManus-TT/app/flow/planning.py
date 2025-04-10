@@ -18,12 +18,12 @@ class PlanningFlow(BaseFlow):
     llm: LLM = Field(default_factory=lambda: LLM())
     planning_tool: PlanningTool = Field(default_factory=PlanningTool)
     executor_keys: List[str] = Field(default_factory=list)
-    active_plan_id: str = Field(default_factory=lambda: f"plan_{int(time.time())}")
+    active_plan_id: str = Field(
+        default_factory=lambda: f"plan_{int(time.time())}")
     current_step_index: Optional[int] = None
 
-    def __init__(
-        self, agents: Union[BaseAgent, List[BaseAgent], Dict[str, BaseAgent]], **data
-    ):
+    def __init__(self, agents: Union[BaseAgent, List[BaseAgent],
+                                     Dict[str, BaseAgent]], **data):
         # Set executor keys before super().__init__
         if "executors" in data:
             data["executor_keys"] = data.pop("executors")
@@ -81,7 +81,8 @@ class PlanningFlow(BaseFlow):
             result = ""
             while True:
                 # Get current step to execute
-                self.current_step_index, step_info = await self._get_current_step_info()
+                self.current_step_index, step_info = await self._get_current_step_info(
+                )
 
                 # Exit if no more steps or plan completed
                 if self.current_step_index is None:
@@ -90,12 +91,15 @@ class PlanningFlow(BaseFlow):
 
                 # Execute current step with appropriate agent
                 step_type = step_info.get("type") if step_info else None
+                # 选择一个智能体作为执行者
                 executor = self.get_executor(step_type)
+                # 执行当前步骤
                 step_result = await self._execute_step(executor, step_info)
                 result += step_result + "\n"
 
                 # Check if agent wants to terminate
-                if hasattr(executor, "state") and executor.state == AgentState.FINISHED:
+                if hasattr(executor,
+                           "state") and executor.state == AgentState.FINISHED:
                     break
 
             return result
@@ -111,8 +115,7 @@ class PlanningFlow(BaseFlow):
         system_message = Message.system_message(
             "You are a planning assistant. Create a concise, actionable plan with clear steps. "
             "Focus on key milestones rather than detailed sub-steps. "
-            "Optimize for clarity and efficiency."
-        )
+            "Optimize for clarity and efficiency.")
 
         # Create a user message with the request
         user_message = Message.user_message(
@@ -120,11 +123,12 @@ class PlanningFlow(BaseFlow):
         )
 
         # Call LLM with PlanningTool
+        # 工具是planning_tool
         response = await self.llm.ask_tool(
             messages=[user_message],
             system_msgs=[system_message],
             tools=[self.planning_tool.to_param()],
-            tool_choice="required",
+            tool_choice="required",  # required 表示必须使用工具
         )
 
         # Process tool calls if present
@@ -137,7 +141,8 @@ class PlanningFlow(BaseFlow):
                         try:
                             args = json.loads(args)
                         except json.JSONDecodeError:
-                            logger.error(f"Failed to parse tool arguments: {args}")
+                            logger.error(
+                                f"Failed to parse tool arguments: {args}")
                             continue
 
                     # Ensure plan_id is set correctly and execute the tool
@@ -157,20 +162,19 @@ class PlanningFlow(BaseFlow):
             **{
                 "command": "create",
                 "plan_id": self.active_plan_id,
-                "title": f"Plan for: {request[:50]}{'...' if len(request) > 50 else ''}",
+                "title":
+                f"Plan for: {request[:50]}{'...' if len(request) > 50 else ''}",
                 "steps": ["Analyze request", "Execute task", "Verify results"],
-            }
-        )
+            })
 
-    async def _get_current_step_info(self) -> tuple[Optional[int], Optional[dict]]:
+    async def _get_current_step_info(
+            self) -> tuple[Optional[int], Optional[dict]]:
         """
         Parse the current plan to identify the first non-completed step's index and info.
         Returns (None, None) if no active step is found.
         """
-        if (
-            not self.active_plan_id
-            or self.active_plan_id not in self.planning_tool.plans
-        ):
+        if (not self.active_plan_id
+                or self.active_plan_id not in self.planning_tool.plans):
             logger.error(f"Plan with ID {self.active_plan_id} not found")
             return None, None
 
@@ -207,14 +211,17 @@ class PlanningFlow(BaseFlow):
                             step_status=PlanStepStatus.IN_PROGRESS.value,
                         )
                     except Exception as e:
-                        logger.warning(f"Error marking step as in_progress: {e}")
+                        logger.warning(
+                            f"Error marking step as in_progress: {e}")
                         # Update step status directly if needed
                         if i < len(step_statuses):
                             step_statuses[i] = PlanStepStatus.IN_PROGRESS.value
                         else:
                             while len(step_statuses) < i:
-                                step_statuses.append(PlanStepStatus.NOT_STARTED.value)
-                            step_statuses.append(PlanStepStatus.IN_PROGRESS.value)
+                                step_statuses.append(
+                                    PlanStepStatus.NOT_STARTED.value)
+                            step_statuses.append(
+                                PlanStepStatus.IN_PROGRESS.value)
 
                         plan_data["step_statuses"] = step_statuses
 
@@ -252,7 +259,8 @@ class PlanningFlow(BaseFlow):
 
             return step_result
         except Exception as e:
-            logger.error(f"Error executing step {self.current_step_index}: {e}")
+            logger.error(
+                f"Error executing step {self.current_step_index}: {e}")
             return f"Error executing step {self.current_step_index}: {str(e)}"
 
     async def _mark_step_completed(self) -> None:
@@ -283,15 +291,15 @@ class PlanningFlow(BaseFlow):
                     step_statuses.append(PlanStepStatus.NOT_STARTED.value)
 
                 # Update the status
-                step_statuses[self.current_step_index] = PlanStepStatus.COMPLETED.value
+                step_statuses[
+                    self.current_step_index] = PlanStepStatus.COMPLETED.value
                 plan_data["step_statuses"] = step_statuses
 
     async def _get_plan_text(self) -> str:
         """Get the current plan as formatted text."""
         try:
             result = await self.planning_tool.execute(
-                command="get", plan_id=self.active_plan_id
-            )
+                command="get", plan_id=self.active_plan_id)
             return result.output if hasattr(result, "output") else str(result)
         except Exception as e:
             logger.error(f"Error getting plan: {e}")
@@ -316,7 +324,10 @@ class PlanningFlow(BaseFlow):
                 step_notes.append("")
 
             # Count steps by status
-            status_counts = {status: 0 for status in PlanStepStatus.get_all_statuses()}
+            status_counts = {
+                status: 0
+                for status in PlanStepStatus.get_all_statuses()
+            }
 
             for status in step_statuses:
                 if status in status_counts:
@@ -338,13 +349,11 @@ class PlanningFlow(BaseFlow):
 
             status_marks = PlanStepStatus.get_status_marks()
 
-            for i, (step, status, notes) in enumerate(
-                zip(steps, step_statuses, step_notes)
-            ):
+            for i, (step, status,
+                    notes) in enumerate(zip(steps, step_statuses, step_notes)):
                 # Use status marks to indicate step status
                 status_mark = status_marks.get(
-                    status, status_marks[PlanStepStatus.NOT_STARTED.value]
-                )
+                    status, status_marks[PlanStepStatus.NOT_STARTED.value])
 
                 plan_text += f"{i}. {status_mark} {step}\n"
                 if notes:
@@ -369,9 +378,8 @@ class PlanningFlow(BaseFlow):
                 f"The plan has been completed. Here is the final plan status:\n\n{plan_text}\n\nPlease provide a summary of what was accomplished and any final thoughts."
             )
 
-            response = await self.llm.ask(
-                messages=[user_message], system_msgs=[system_message]
-            )
+            response = await self.llm.ask(messages=[user_message],
+                                          system_msgs=[system_message])
 
             return f"Plan completed:\n\n{response}"
         except Exception as e:
