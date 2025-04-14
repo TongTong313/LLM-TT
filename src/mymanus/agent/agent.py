@@ -1,11 +1,9 @@
-# 智能体类，智能体包含感知、规划、工具、记忆等组件，一个一个来实现
-from typing import List, Dict, Any, Optional, Callable
+from typing import List, Dict, Optional, Callable
 from .memory_manager import MemoryManager
 from .tool_manager import ToolManager
-import json
-from openai import AsyncOpenAI
-import os
 from .llm import LLM
+from loguru import logger
+from ..prompt import NEXT_STEP_PROMPT
 
 
 class Agent:
@@ -24,20 +22,204 @@ class Agent:
         llm (LLM): 大模型实例，在这里主要用于任务规划
         tool_manager (ToolManager): 工具管理器
         memory_manager (MemoryManager): 记忆管理器
+        max_step (int): 最大步骤，默认10
     """
 
-    def __init__(self, llm: LLM, tool_manager: ToolManager,
-                 memory_manager: MemoryManager):
+    def __init__(self,
+                 llm: LLM,
+                 tool_manager: ToolManager,
+                 memory_manager: MemoryManager,
+                 max_step: int = 10):
         self.llm = llm
         self.tool_manager = tool_manager
         self.memory_manager = memory_manager
+        self.max_step = max_step
+
+        # 时刻提醒大模型能终止
+        self.next_step_prompt = NEXT_STEP_PROMPT
+
+    # React框架，先think（reasoning），再act
+    async def think(self, message: List[Dict]):
+        """使用大模型进行思考，返回是否需要使用工具
+        
+        Args:
+            message (List[Dict]): 消息列表
+
+        Returns:
+            bool: 是否需要使用工具
+        """
+        # 添加终止提示
+        message.append({"role": "user", "content": self.next_step_prompt})
+        response = await self.llm.chat(
+            messages=message, tools=self.tool_manager.get_tool_schema_list())
+
+        # 回复内容全部加入记忆模块，加入的得是字典
+        self.memory_manager.add_message(response.model_dump())
+        # 打印回复内容
+        if response.content:
+            logger.info(f"智能体回复：{response.content}")
+        # 判断是否需要使用工具
+        if response.tool_calls:
+            return True
+        else:
+            return False
+
+    async def act(self, message: List[Dict]):
+        """调用对应工具返回结果，并将返回结构通过assistant message返回，需要注意，一旦调用工具还需要反馈assistant message，要把函数运行结果返回给大模型做下一步的计划
+        
+        Args:
+            message (List[Dict]): 消息列表
+
+        Returns:
+            bool: 是否执行完所有的工具
+        """
+
+        # 根据记忆读取最新的回复，根据tool_calls顺序执行工具，返回的可能不止一个工具
+        for tool_call in message["tool_calls"]:
+            if tool_call["function"]["name"] == "terminate":
+                return True
+
+            # 拿到调用工具的名称、入参、id、index
+            tool_name = tool_call["function"]["name"]
+            tool_arguments = tool_call["function"]["arguments"]
+            tool_id = tool_call["id"]
+            tool_index = tool_call["index"]
+
+            # 执行工具
+            logger.info(f"调用工具：{tool_name}，入参：{tool_arguments}")
+            try:
+                # 如果tool_arguments为空字典，则不传入入参
+                if tool_arguments == "{}":
+                    tool_arguments = None
+
+                if tool_arguments:
+                    tool_result = await self.tool_manager.execute_tool(
+                        tool_name, tool_arguments)
+                else:
+                    tool_result = await self.tool_manager.execute_tool(
+                        tool_name)
+                logger.info(f"工具{tool_name}执行成功")
+                """
+                工具执行成功后，需要将工具执行结果返回给大模型，大模型根据工具执行结果，决定是否继续调用工具或者输出给用户，基本格式(qwen建议)：
+                assistant_messages_template = {
+                        "content":
+                        "",
+                        "refusal":
+                        None,
+                        "role":
+                        "assistant",
+                        "audio":
+                        None,
+                        "function_call":
+                        None,
+                        "tool_calls": [{
+                            "id": "call_xxx",
+                            "function": {
+                                "arguments": "",
+                                "name": "",
+                            },
+                            "type": "function",
+                            "index": 0,
+                        }],
+                    }
+                """
+                # 首先是一个assistant message，然后是一个tool message
+                assistant_message = {
+                    "content":
+                    "",
+                    "refusal":
+                    None,
+                    "role":
+                    "assistant",
+                    "audio":
+                    None,
+                    "function_call":
+                    None,
+                    "tool_calls": [{
+                        "id": tool_id,
+                        "function": {
+                            "arguments": tool_arguments,
+                            "name": tool_name,
+                        },
+                        "type": "function",
+                        "index": tool_index,
+                    }],
+                }
+                # 将这个结果加入到记忆当中
+                self.memory_manager.add_message(assistant_message)
+
+                # 然后是一个tool message
+                tool_message = {
+                    "content": tool_result,
+                    "role": "tool",
+                    "tool_call_id": tool_id
+                }
+                self.memory_manager.add_message(tool_message)
+
+            except Exception as e:
+                logger.error(f"工具{tool_name}执行失败，错误信息：{e}")
+                # 将错误信息告知大模型
+                assistant_message = {
+                    "content": f"工具{tool_name}执行失败，错误信息：{e}",
+                    "refusal": None,
+                    "role": "assistant",
+                    "audio": None,
+                    "function_call": None,
+                    "tool_calls": None,
+                }
+                self.memory_manager.add_message(assistant_message)
+        # 返回结果
+        return False
+
+    async def run_step(self, message: List[Dict]):
+        """运行一个react步骤，包括一次think和一次act
+        
+        Args:
+            message (List[Dict]): 消息列表
+
+        Returns:
+            bool: 是否执行完所有的工具
+        """
+
+        # 思考
+        should_act = await self.think(message)
+        if should_act:
+            # 行动
+            current_message = self.memory_manager.get_memory()[-1]
+            should_terminate = await self.act(current_message)
+            if should_terminate:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    async def run(self, message: List[Dict]):
+        # 用户问题本身也要加到记忆里面
+        self.memory_manager.add_message(message)
+
+        for i in range(self.max_step):
+            logger.warning(f"正在执行第{i+1}步……")
+            print(message)  # 这里不对！改！根本没有利用记忆机制！！！
+            final_step = await self.run_step(message)
+            if final_step:
+                break
+        logger.warning(f"智能体执行已达最大步数{self.max_step}")
 
     # 智能体支持对工具采用装饰器的形式变为注册工具
-    def register_tool(self, func: Callable):
-        """类似MCP，用装饰器直接注册工具"""
+    def tool(self, func: Callable, tool_name: Optional[str] = None):
+        """类似MCP协议，用装饰器直接注册工具
+        
+        Args:
+            func (Callable): 要注册的工具函数
+            tool_name (Optional[str]): 工具名称，如果为None，则使用函数名作为工具名称
+        """
 
         def decorator(func: Callable):
-            self.tool_manager.register_tool(func)
+            self.add_tool(func, tool_name)
             return func
 
         return decorator
+
+    def add_tool(self, func: Callable, tool_name: Optional[str] = None):
+        self.tool_manager.register_tool(func, tool_name)

@@ -5,8 +5,7 @@ description = "童发发大模型学习之旅"
 authors = ["Tong Tong <tongtong950313@163.com>"]
 readme = "README.md"
 packages = [
-    {include = "manus", from = "src"},
-    {include = "mcp", from = "src"}
+    {include = "mymanus", from = "src"},
 ]
 license = "MIT"
 homepage = "https://github.com/TongTong313/LLM-TT"

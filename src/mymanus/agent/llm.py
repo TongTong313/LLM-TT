@@ -1,8 +1,8 @@
 from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletionMessage
 import os
 from typing import List, Dict, Optional, Literal
 import asyncio
-from loguru import logger
 
 
 class LLM:
@@ -16,16 +16,6 @@ class LLM:
         temperature (float, optional): 温度，控制大模型生成结果的随机性，越大随机性越强，默认0.7。
         max_tokens (int, optional): 最大tokens，默认1000。
         stream (bool, optional): 是否流式输出，默认False。
-        
-    Examples:
-        返回大模型回复的message，形式为，是一个Dict：
-        {
-            "role": "assistant",
-            "content": "你好，我是小明，很高兴认识你。"
-        }
-        
-    Returns:
-        Dict: 大模型的回复
     """
 
     def __init__(self,
@@ -49,6 +39,8 @@ class LLM:
                    tools: Optional[List[Dict]] = None,
                    temperature: Optional[float] = None,
                    max_tokens: Optional[int] = None,
+                   tool_choice: Optional[Literal["auto", "required",
+                                                 "none"]] = None,
                    stream: Optional[bool] = None) -> Dict:
         """与大模型进行交互对话
 
@@ -60,13 +52,15 @@ class LLM:
             stream (bool, optional): 是否流式输出，默认使用类初始化时的流式输出。
 
         Returns:
-            Dict: 大模型的回复
+            ChatCompletionMessage: openai格式的回复类
         """
         try:
             # 构建请求参数，字典形式
             request_params = {
                 "model": self.model,
                 "messages": messages,
+                "tool_choice":
+                self.tool_choice if tool_choice is None else tool_choice,
                 "max_tokens":
                 self.max_tokens if max_tokens is None else max_tokens,
                 "temperature":
@@ -84,7 +78,6 @@ class LLM:
                 # 非流式请求
                 response = await self.client.chat.completions.create(
                     **request_params)
-
                 return response.choices[0].message
             else:
                 # 流式请求
@@ -126,9 +119,6 @@ class LLM:
                             if tool_call.function and tool_call.function.name:
                                 current_tool_call["function"][
                                     "name"] = tool_call.function.name
-                                logger.info(
-                                    f"[工具调用: {tool_call.function.name}]")
-
                             # 更新工具参数（需要拼接）
                             if tool_call.function and tool_call.function.arguments:
                                 current_tool_call["function"][
@@ -138,20 +128,26 @@ class LLM:
                 if current_tool_call:
                     collected_tool_calls.append(current_tool_call)
 
-                # 构建完整的响应消息
-                full_message = {
-                    "role":
-                    "assistant",
-                    "content":
-                    "".join(collected_content).strip()
-                    if collected_content else None
-                }
+                # # 构建完整的响应消息
+                # full_message = {
+                #     "role":
+                #     "assistant",
+                #     "content":
+                #     "".join(collected_content).strip()
+                #     if collected_content else None
+                # }
 
                 # 如果有工具调用，添加到响应中
-                if collected_tool_calls:
-                    full_message["tool_calls"] = collected_tool_calls
+                # if collected_tool_calls:
+                #     full_message["tool_calls"] = collected_tool_calls
 
-                return full_message
+                # 把字典转换为openai的ChatCompletionMessage对象
+                return ChatCompletionMessage(
+                    role="assistant",
+                    content="".join(collected_content).strip()
+                    if collected_content else None,
+                    tool_calls=collected_tool_calls
+                    if collected_tool_calls else None)
 
         except Exception as e:
             raise Exception(f"调用大模型API失败: {str(e)}")
@@ -161,20 +157,17 @@ if __name__ == "__main__":
     # 测试代码
     llm = LLM(api_key=os.getenv("DASHSCOPE_API_KEY"),
               base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-              stream=True)
+              stream=False)
     messages = []
     # 添加系统prompt
     messages.append({
         "role":
         "system",
         "content":
-        "你是一个AI助手，请根据用户的问题给出回答，必要时可以调用多个工具完成任务。\n目前你包含两个工具，一旦用户需要获取用户信息，调用get_user_info工具，一旦用户需要获得用户朋友圈，调用get_user_friends工具。"
+        "你是一个AI助手，请根据用户的问题给出回答，必要时可以调用多个工具完成任务。你现在拥有两个工具，一个获取用户信息，一个获取用户朋友圈。"
     })
     # 添加用户消息
-    messages.append({
-        "role": "user",
-        "content": "你好，我的名字是童发发，我要查询我的个人信息，之后获取朋友圈。"
-    })
+    messages.append({"role": "user", "content": "你好，我的名字是童发发。"})
     # 模拟多个tools
     tools = [{
         "type": "function",

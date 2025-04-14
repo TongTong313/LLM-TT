@@ -81,7 +81,6 @@ class Tool:
         # 获取函数签名：可以提取入参名称和类型信息和出参的类型信息
         # 例如：(location: str, units: Optional[str] = 'celsius') -> str
         sig = inspect.signature(func)
-        print(sig.parameters.items())
 
         # 获取函数参数类型提示：一个字典，分别描述函数的每个入参的类型和返回值的类型
         # 例如：{'location': <class 'str'>, 'return': <class 'str'>}
@@ -197,7 +196,7 @@ class ToolManager:
 
     # 初始化类
     def __init__(self):
-        self._tools: Dict[str, Tool] = {}  # 每一个工具都是Tool实例
+        self.tools: Dict[str, Tool] = {}  # 每一个工具都是Tool实例
 
     # 工具注册：让工具管理器感知到
     def register_tool(self, func: Callable, tool_name: Optional[str] = None):
@@ -211,12 +210,12 @@ class ToolManager:
         # 生成工具的名称，没有名称给一个默认的名称
         if tool_name is None:
             tool_name = func.__name__
-        elif tool_name in self._tools:
+        elif tool_name in self.tools:
             warnings.warn(f"工具名称{tool_name}已存在，将覆盖原有工具")
 
         # 生成工具的实例
         tool = Tool(func=func, tool_name=tool_name)
-        self._tools[tool_name] = tool
+        self.tools[tool_name] = tool
 
     # 工具执行：执行工具，并返回结果
     def execute_tool(self, tool_name: str, *args, **kwargs):
@@ -230,10 +229,10 @@ class ToolManager:
         Returns:
             Any: 工具返回结果
         """
-        if tool_name not in self._tools:
+        if tool_name not in self.tools:
             raise ValueError(f"工具名称{tool_name}不存在")
 
-        return self._tools[tool_name].execute(*args, **kwargs)
+        return self.tools[tool_name].execute(*args, **kwargs)
 
     # 工具删除：删除工具
     def delete_tool(self, tool_name: str) -> bool:
@@ -245,8 +244,8 @@ class ToolManager:
         Returns:
             bool: 是否删除成功
         """
-        if tool_name in self._tools:
-            del self._tools[tool_name]
+        if tool_name in self.tools:
+            del self.tools[tool_name]
             return True
 
         return False
@@ -258,7 +257,16 @@ class ToolManager:
         Returns:
             List[Tool]: 工具列表
         """
-        return list(self._tools.values())
+        return list(self.tools.values())
+
+    # 获取所有的schema
+    def get_tool_schema_list(self) -> List[Dict]:
+        """获取所有工具的schema
+
+        Returns:
+            List[Dict]: 工具schema列表
+        """
+        return [tool.tool_schema for tool in self.tools.values()]
 
 
 # 模拟天气查询工具。返回结果示例：“北京今天是雨天。”
@@ -293,4 +301,4 @@ if __name__ == "__main__":
     func = get_current_weather
     tool_manager = ToolManager()
     tool_manager.register_tool(func)
-    print(tool_manager._tools['get_current_weather'].__dict__)
+    print(tool_manager.tools['get_current_weather'].__dict__)

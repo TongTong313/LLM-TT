@@ -13,7 +13,11 @@ class MemoryManager:
         self.max_memory = max_memory
 
     def add_message(self, message: Dict[str, str]):
-        """添加一条消息到记忆，超过最大记忆数则删除最早的消息"""
+        """添加一条消息到记忆，超过最大记忆数则删除最早的消息
+
+        Args:
+            message (Dict[str, str]): 消息
+        """
         self.memory.append(message)
         if len(self.memory) > self.max_memory:
             self.memory.pop(0)

@@ -1,0 +1,67 @@
+from mymanus.prompt import SYSTEM_PROMPT as system_prompt
+from mymanus.agent import Agent, ToolManager, MemoryManager, LLM
+from mymanus.tool import baidu_search, get_current_time, terminate
+import os
+from loguru import logger
+import asyncio
+import traceback
+
+MAX_STEP = 5
+
+
+async def main():
+    # 初始化大模型
+    api_key = os.getenv("DASHSCOPE_API_KEY")
+    base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    llm = LLM(api_key=api_key,
+              base_url=base_url,
+              max_tokens=4000,
+              tool_choice="auto",
+              stream=True)
+
+    # 初始化工具管理器
+    tool_manager = ToolManager()
+    # 初始化记忆管理器
+    memory_manager = MemoryManager(max_memory=20)
+    # 初始化智能体
+    agent = Agent(llm=llm,
+                  tool_manager=tool_manager,
+                  memory_manager=memory_manager,
+                  max_step=MAX_STEP)
+
+    # 注册工具
+    agent.add_tool(baidu_search, tool_name="baidu_search")
+    agent.add_tool(get_current_time, tool_name="get_current_time")
+    agent.add_tool(terminate, tool_name="terminate")
+
+    prompt_list = [{"role": "system", "content": system_prompt}]
+
+    while True:
+        try:
+            prompt = input("我是你的专属助手，请输入你的需求，输入quit/exit可退出：")
+            if prompt.lower() in ["quit", "exit"]:
+                logger.warning("Goodbye!")
+                break
+
+            # 要把prompt变为字典送入
+            prompt_dict = [{"role": "user", "content": prompt}]
+            prompt_list.extend(prompt_dict)
+
+            # 运行智能体
+            logger.warning(f"智能体正在运行中……")
+            result = await agent.run(prompt_list)
+
+            if result:
+                logger.warning(f"智能体执行完成")
+        except KeyboardInterrupt:
+            logger.warning("Goodbye!")
+            break
+        except Exception as e:
+            logger.error(f"智能体运行错误: {e}")
+            logger.error("错误堆栈信息:")
+            logger.error(traceback.format_exc())
+            break
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
