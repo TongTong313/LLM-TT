@@ -117,7 +117,7 @@ class Agent:
                 logger.error(f"工具{tool_name}执行失败，错误信息：{e}")
                 # 将错误信息告知大模型
                 assistant_message = {
-                    "content": f"工具{tool_name}执行失败，错误信息：{e}",
+                    "content": f"工具{tool_name}执行失败，考虑调用其他工具",
                     "refusal": None,
                     "role": "assistant",
                     "audio": None,
@@ -174,20 +174,22 @@ class Agent:
 
         # 最后一步要综合除了最后一轮信息给用户一个总结性的回复，还需要和大模型做一次对话
         if final_step:
-            # final_message = {"role": "user", "content": self.final_step_prompt}
+
+            final_message = {"role": "user", "content": self.final_step_prompt}
             # 注意在调用terminate工具的同时还可能有输出，得把terminate当成一个普通工具对待
             # 把final_message加入到memory当中
-            # self.memory_manager.add_message(final_message)
+            self.memory_manager.add_message(final_message)
+
             logger.warning(f"智能体正在总结答案……")
+            # 这里有一个特别坑的地方，就是tools必须全程保持一致，否则大模型自动进入新的问答，无法结合上下文信息分析了
             final_response = await self.llm.chat(
                 messages=self.memory_manager.get_memory(),
                 tool_choice="none",
-                tools=None)
+                tools=self.tool_manager.get_tool_schema_list())
             self.memory_manager.add_message(final_response.model_dump())
             # 空一行
             print()
             logger.warning(f"智能体总结答案完成~")
-            # print(self.memory_manager.get_memory())
 
         if step == self.max_step:
             logger.warning(f"智能体执行已达最大步数{self.max_step}")

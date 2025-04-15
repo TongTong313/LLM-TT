@@ -2,12 +2,12 @@ from baidusearch.baidusearch import search
 import json
 
 
-async def baidu_search(query: str, num_results: int = 3) -> str:
+async def baidu_search(query: str, num_results: int = 10) -> str:
     """百度搜索工具
 
     Args:
         query (str): 搜索关键词
-        num_results (int, optional): 搜索结果数量，默认3条.
+        num_results (int, optional): 搜索结果数量，默认10条.
 
     Returns:
         str: 格式化的搜索结果
@@ -29,6 +29,7 @@ async def baidu_search(query: str, num_results: int = 3) -> str:
         formatted_result = f"""
                             第{i}条搜索结果：
                             标题：{title}
+                            链接：{url}
                             摘要：{abstract}
                             """
         formatted_results.append(formatted_result)
