@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 
 
 class MemoryManager:
@@ -12,13 +12,19 @@ class MemoryManager:
         self.memory: List[Dict[str, str]] = []
         self.max_memory = max_memory
 
-    def add_message(self, message: Dict[str, str]):
+    def add_message(self, message: Union[Dict[str, str], List[Dict[str,
+                                                                   str]]]):
         """添加一条消息到记忆，超过最大记忆数则删除最早的消息
 
         Args:
             message (Dict[str, str]): 消息
         """
-        self.memory.append(message)
+        if isinstance(message, Dict):
+            self.memory.append(message)
+        elif isinstance(message, List):
+            self.memory.extend(message)
+        else:
+            raise ValueError("message must be a Dict or List")
         if len(self.memory) > self.max_memory:
             self.memory.pop(0)
 
@@ -28,4 +34,4 @@ class MemoryManager:
 
     def clear(self):
         """清空记忆"""
-        self.memory.clear()
+        self.memory = []

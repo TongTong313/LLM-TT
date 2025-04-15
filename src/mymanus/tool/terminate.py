@@ -4,4 +4,4 @@ async def terminate():
     Returns:
         str: 固定回答
     """
-    return f"智能体已经解决用户的需求，停止工具调用"
+    return f"开始总结用户结果"

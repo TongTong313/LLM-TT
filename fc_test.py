@@ -123,7 +123,6 @@ async def function_calling(
         origin_messages.extend(history_messages)
 
     # print(origin_messages)
-
     response = await client.chat.completions.create(model="qwen-plus",
                                                     messages=origin_messages,
                                                     tools=tools,
@@ -205,7 +204,7 @@ async def main():
     # 1. 大模型根据用户问题以字符串形式返回调用工具名称和入参
     function_name, function_arguments, fun_id, origin_messages, response_content = await function_calling(
         query)
-    # print('\n')  # 换行
+
     if function_name:
         print(
             f"执行函数调用：工具名称：{function_name}，工具参数：{function_arguments}，工具调用id：{fun_id}"
@@ -244,6 +243,7 @@ async def main():
     })
 
     # 6.4 将拼接后的messages发送给大模型，现在包括原始messages、assistant_messages、function_result
+    print(origin_messages)
     function_name, function_arguments, fun_id, origin_messages, response_content = await function_calling(
         query, origin_messages)
     if function_name:

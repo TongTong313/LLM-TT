@@ -21,9 +21,9 @@ class Tool:
             self.tool_name = tool_name
         self.tool_schema = self._get_tool_schema(func)
 
-    def execute(self, *args, **kwargs):
+    def execute(self, **kwargs):
         """执行工具"""
-        return self.func(*args, **kwargs)
+        return self.func(**kwargs)
 
     def _get_tool_schema(self, func: Callable) -> Dict:
         """tool都是以函数代码的形式存在，但大模型并不能直接认识“代码”，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
@@ -218,12 +218,11 @@ class ToolManager:
         self.tools[tool_name] = tool
 
     # 工具执行：执行工具，并返回结果
-    def execute_tool(self, tool_name: str, *args, **kwargs):
+    def execute_tool(self, tool_name: str, **kwargs):
         """执行工具
 
         Args:
             name (str): 工具名称
-            *args: 工具入参
             **kwargs: 工具入参
 
         Returns:
@@ -232,7 +231,7 @@ class ToolManager:
         if tool_name not in self.tools:
             raise ValueError(f"工具名称{tool_name}不存在")
 
-        return self.tools[tool_name].execute(*args, **kwargs)
+        return self.tools[tool_name].execute(**kwargs)
 
     # 工具删除：删除工具
     def delete_tool(self, tool_name: str) -> bool:

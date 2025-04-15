@@ -145,7 +145,7 @@ class LLM:
                 return ChatCompletionMessage(
                     role="assistant",
                     content="".join(collected_content).strip()
-                    if collected_content else None,
+                    if collected_content else "",
                     tool_calls=collected_tool_calls
                     if collected_tool_calls else None)
 

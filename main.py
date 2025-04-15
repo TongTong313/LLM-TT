@@ -1,6 +1,6 @@
 from mymanus.prompt import SYSTEM_PROMPT as system_prompt
 from mymanus.agent import Agent, ToolManager, MemoryManager, LLM
-from mymanus.tool import baidu_search, get_current_time, terminate
+from mymanus.tool import *
 import os
 from loguru import logger
 import asyncio
@@ -15,7 +15,7 @@ async def main():
     base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     llm = LLM(api_key=api_key,
               base_url=base_url,
-              max_tokens=4000,
+              max_tokens=8000,
               tool_choice="auto",
               stream=True)
 
@@ -33,12 +33,15 @@ async def main():
     agent.add_tool(baidu_search, tool_name="baidu_search")
     agent.add_tool(get_current_time, tool_name="get_current_time")
     agent.add_tool(terminate, tool_name="terminate")
+    agent.add_tool(add, tool_name="add")
 
     prompt_list = [{"role": "system", "content": system_prompt}]
 
     while True:
         try:
-            prompt = input("我是你的专属助手，请输入你的需求，输入quit/exit可退出：")
+            prompt_list = [{"role": "system", "content": system_prompt}]
+            prompt = input(
+                "我是童发发开发的manus超级助手，请输入你的需求，我会尽力解决你的问题，输入quit/exit可退出：")
             if prompt.lower() in ["quit", "exit"]:
                 logger.warning("Goodbye!")
                 break
