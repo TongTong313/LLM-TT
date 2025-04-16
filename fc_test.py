@@ -97,9 +97,7 @@ tools = [{
 
 
 # 异步任务
-async def function_calling(
-        query: str,
-        history_messages: Optional[List[str]] = None) -> tuple[str, str, str]:
+async def function_calling(query: str) -> tuple[str, str, str]:
     """函数调用函数，采用流式输出，兼容普通问答
 
     Args:
@@ -109,8 +107,6 @@ async def function_calling(
         tuple[str, str, str]: 工具名称、工具入参、回答
     """
 
-    # print(f"正在提问: {query}")
-
     origin_messages = [{
         "role": "system",
         "content": "你是一个AI助手，请根据用户的问题给出回答，可以采用工具调用帮助回答问题"
@@ -119,43 +115,30 @@ async def function_calling(
         "content": query
     }]
 
-    if history_messages:
-        origin_messages.extend(history_messages)
-
-    # print(origin_messages)
     response = await client.chat.completions.create(model="qwen-plus",
                                                     messages=origin_messages,
                                                     tools=tools,
                                                     tool_choice="auto",
                                                     stream=True)
-    # full_response = ""
     function_name = ""
     function_arguments = ""
     response_content = ""
     fun_id = None
     first_chunk = True
+    # 处理流式输出：当成标准模板背诵！
     async for chunk in response:
-        # print(chunk)
         if chunk.choices[0].delta.tool_calls:
             if first_chunk:  # 第一个chunk提取工具名称，同时开始累积函数入参
                 function_name = chunk.choices[0].delta.tool_calls[
                     0].function.name
-                # print(f"工具名称：{function_name}，工具参数：", end="")
                 function_arguments += chunk.choices[0].delta.tool_calls[
                     0].function.arguments
-                # print(chunk.choices[0].delta.tool_calls[0].function.arguments,
-                #       end="",
-                #       flush=True)
                 fun_id = chunk.choices[0].delta.tool_calls[0].id
                 first_chunk = False
             else:
                 if chunk.choices[0].delta.tool_calls[0].function.arguments:
                     function_arguments += chunk.choices[0].delta.tool_calls[
                         0].function.arguments
-                    # print(chunk.choices[0].delta.tool_calls[0].function.
-                    #       arguments,
-                    #       end="",
-                    #       flush=True)
         else:
             # 不是函数调用，正常回答
             if chunk.choices[0].delta.content:
