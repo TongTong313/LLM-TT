@@ -64,7 +64,7 @@ source .venv/bin/activate
 ## 4. 更新日志
 - 2025.05.06
   - 采用uv管理项目依赖
-  - 支持qwen3模型的enable_thinking功能（下一期视频讲述）
+  - 支持qwen3模型的enable_thinking功能
 - 2025.05.01
   - 对工具调用bug做了一些修复
   - 函数调用支持List类型
