@@ -4,34 +4,47 @@ import random
 import inspect
 import warnings
 from mymanus.tool.math import add
+from abc import ABC, abstractmethod
 
 
-class Tool:
-    """工具描述类别，所有的工具都属于这个类
+class BaseTool(BaseModel):
+    """基础工具类，所有的类都要继承这个类
     
     Args:
-        func (Callable): 工具函数
-        tool_name (str, optional): 工具名称，默认是函数名
+        tool (Any): 工具，形式不限
+        tool_name (str, optional): 工具名称
+        tool_description (Optional[str], optional): 工具描述
     """
+    tool: Any = Field(..., description="工具")
+    tool_name: str = Field(..., description="工具名称")
+    tool_description: Optional[str] = Field(..., description="工具描述")
 
-    def __init__(self, func: Callable, tool_name: Optional[str] = None):
-        self.func = func
-        if tool_name is None:
-            self.tool_name = func.__name__
-        else:
-            self.tool_name = tool_name
-        self.tool_schema = self._get_tool_schema(func)
-
-    def execute(self, **kwargs):
+    async def execute(self, **kwargs) -> Any:
         """执行工具"""
-        return self.func(**kwargs)
 
-    def _get_tool_schema(self, func: Callable) -> Dict:
+        raise NotImplementedError("子类必须实现execute方法")
+
+    def to_tool_schema(self) -> Dict:
+        """将工具转换为工具schema，用于大模型调用"""
+        raise NotImplementedError("子类必须实现to_tool_schema方法")
+
+
+class FunctionTool(BaseTool):
+    """由python函数构成的工具描述类别
+    
+    Args:
+        tool (Callable): 工具函数（继承自BaseTool）
+        tool_name (str, optional): 工具名称，默认是函数名（继承自BaseTool）
+        tool_description (Optional[str], optional): 工具描述，默认是函数文档的第一行（继承自BaseTool）
+    """
+    # 函数工具，就要求是Callable类型
+    tool: Callable = Field(..., description="工具函数")
+    tool_name: str = Field(default=None, description="工具名称")
+    tool_description: Optional[str] = Field(default=None, description="工具描述")
+
+    def _get_tool_schema(self) -> Dict:
         """tool都是以函数代码的形式存在，但大模型并不能直接认识"代码"，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
-        
-        Args:
-            func (Callable): 工具函数
-
+       
         Returns:
             Dict: 工具schema
 
@@ -65,16 +78,19 @@ class Tool:
         schema = {
             "type": "function",
             "function": {
-                "name": self.tool_name if self.tool_name else func.__name__,
-                "description": func.__doc__.split('\n')[0]
-                if func.__doc__ else "",  # 只取第一行工具描述
+                "name":
+                self.tool_name if self.tool_name else self.tool.__name__,
+                "description":
+                self.tool.__doc__.split('\n')[0]
+                if self.tool.__doc__ else "",  # 只取第一行工具描述
                 "parameters": {
                     "type": "object",
                     "properties": {},  # 后面获取工具入参
                     "required": [],  # 一旦strict=True，所有变量都是required的
                     "additionalProperties": False
                 },
-                "strict": True
+                "strict":
+                True
             }
         }
 
@@ -225,7 +241,7 @@ class ToolManager:
 
     # 初始化类
     def __init__(self):
-        self.tools: Dict[str, Tool] = {}  # 每一个工具都是Tool实例
+        self.tools: Dict[str, BaseTool] = {}  # 每一个工具都是BaseTool实例
 
     # 工具注册：让工具管理器感知到
     def register_tool(self, func: Callable, tool_name: Optional[str] = None):
@@ -243,7 +259,7 @@ class ToolManager:
             warnings.warn(f"工具名称{tool_name}已存在，将覆盖原有工具")
 
         # 生成工具的实例
-        tool = Tool(func=func, tool_name=tool_name)
+        tool = FunctionTool(func=func, tool_name=tool_name)
         self.tools[tool_name] = tool
 
     # 工具执行：执行工具，并返回结果
@@ -279,11 +295,11 @@ class ToolManager:
         return False
 
     # 工具列表：获取所有工具列表
-    def get_tool_list(self) -> List[Tool]:
+    def get_tool_list(self) -> List[FunctionTool]:
         """获取所有工具，并返回列表
 
         Returns:
-            List[Tool]: 工具列表
+            List[FunctionTool]: 工具列表
         """
         return list(self.tools.values())
 
