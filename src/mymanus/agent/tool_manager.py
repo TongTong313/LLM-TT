@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import Callable, get_type_hints, Dict, Any, Type, Optional, List, Literal, get_args, get_origin, Tuple, Union
+from types import NoneType
 import random
 import inspect
 import warnings
@@ -94,32 +95,35 @@ class FunctionTool(BaseTool):
         Returns:
             Dict[str, Any]: 参数类型 schema
         """
+        # 首先必须要搞清楚get_origin函数和get_args函数的作用
+        # get_origin函数：获取给予typing类的类型提示的原始类型（如list、dict、tuple等），但如果类型提示是python内置类型，则返回None
+        # get_args函数：获取类型提示的参数（如List[int]中的int）
+
         # 获取参数类型，get_origin能搞定所有typing包含的类型，但对于python内置类型如list、dict、tuple等，返回的是None，需要单独处理
         para_type = []
-        items_type = None
+        items_type = []
         # get_origin能搞定所有typing包含的类型，但对于python内置类型如list、dict、tuple等，返回的是None，需要单独处理
         type_ori = get_origin(type_hint)
         if type_ori:
             # 如果是typing包含的类型，还需要做一些处理，主要分为以下几种情况：
 
-            # 1. 首先对于List、Dict、Tuple这种，会直接转换为python内置类型，就直接处理，List要记录items的类型，用增加字段{"items": {"type": "string"}}
+            # 1. 首先对于List、Dict、Tuple这种，会直接输出为对应的python内置类型，其中List要记录items的类型表明每个元素是什么类型的变量，用增加字段{"items": {"type": "string"}}
 
-            if type_ori is list:
+            if type_ori is list or type_ori is tuple:
                 para_type.append("array")
+                if get_args(type_hint):
+                    items_type.append(
+                        self._get_param_type(get_args(type_hint)[0]))
             elif type_ori is dict:
                 para_type.append("object")
-            elif type_ori is tuple:
-                para_type.append("array")
             elif type_ori is Union:
-                # 对于Union类型（包括Optional），收集所有成员的类型名称
+                # 2. 对于Union类型（包括Optional，因为Optional是Union[T, None]），这都表明这个变量可以有多种类型，需要递归调用_get_param_type函数获取每个成员的类型schema，然后在把所有支持的类型拼接起来放在一起
                 args = get_args(type_hint)
                 # 因为要递归调用了，所以需要一个列表来收集
                 collected_type_names = []
                 for arg in args:
                     # 递归获取成员的类型 schema
-                    arg_schema = self._get_param_type(
-                        arg
-                    )  # 例如 {"type": "string"} 或 {"type": ["foo", "bar"]}
+                    arg_schema = self._get_param_type(arg)
 
                     type_value_from_arg_schema = arg_schema.get("type")
                     if isinstance(type_value_from_arg_schema, list):
@@ -129,6 +133,10 @@ class FunctionTool(BaseTool):
                         # 如果成员仅仅是一个基本类型（返回字符串），则添加字符串
                         collected_type_names.append(type_value_from_arg_schema)
                     # 其他情况（如 arg_schema 没有 "type" 键或类型不是 str/list）将被忽略
+
+                # 保持顺序去重
+                collected_type_names = list(
+                    dict.fromkeys(collected_type_names))
 
                 if not collected_type_names:
                     # 如果没有有效的类型名称（不太可能发生），则认为是string
@@ -153,7 +161,7 @@ class FunctionTool(BaseTool):
                 para_type.append("number")
             elif type_hint is bool:
                 para_type.append("boolean")
-            elif type_hint is type(None):  # 修正了对 NoneType 的判断
+            elif type_hint is type(None):
                 para_type.append("null")
             else:  # 兜底
                 para_type.append("string")
@@ -161,6 +169,9 @@ class FunctionTool(BaseTool):
         # 如果前面的逻辑未能填充 para_type（例如，对于未处理的 type_ori），则提供一个保底
         if not para_type:
             return {"type": "string"}
+
+        if len(items_type) > 0:
+            return {"type": para_type[0], "items": items_type[0]}
 
         return {"type": para_type[0] if len(para_type) == 1 else para_type}
 
@@ -219,6 +230,7 @@ class FunctionTool(BaseTool):
 
         # 获取所有入参的类型，通过get_type_hints函数获取的类型可以兼容typing类
         # 例如：{'location': <class 'str'>, 'units': <class 'typing.Optional'>, 'return': <class 'str'>}
+        # 等价于inspect.get_annotations(self.tool)
         type_hints = get_type_hints(self.tool)
 
         # 遍历所有入参
@@ -447,21 +459,21 @@ class ToolManager:
 
 
 # 模拟天气查询工具。返回结果示例："北京今天是雨天。"
-async def get_current_weather(location: str,
-                              units: Optional[str] = "celsius",
-                              a: int = 1,
-                              b: Optional[list] = [1, 2, 3],
-                              c: List[int] = [1, 2, 3],
-                              d: Literal["a", "b", "c"] = "a",
-                              e: Optional[Tuple[int, int]] = (1, 2),
-                              f: Dict[str, int] = {
-                                  "a": 1,
-                                  "b": 2
-                              },
-                              g: Optional[Union[int, str]] = 1,
-                              h: Optional[Union[List[int],
-                                                List[str]]] = [1, 2, 3],
-                              i: List[List[List[int]]] = [[[1, 2, 3]]]) -> str:
+async def get_current_weather(
+        location: str,
+        units: Optional[str] = "celsius",
+        a: int = 1,
+        b: Optional[list] = [1, 2, 3],
+        c: List[int] = [1, 2, 3],
+        d: Literal["a", "b", "c"] = "a",
+        e: Optional[Tuple[int, int]] = (1, 2),
+        f: Dict[str, int] = {
+            "a": 1,
+            "b": 2
+        },
+        g: Optional[Union[int, str]] = 1,
+        h: Optional[Union[List[int], List[str]]] = [1, 2, 3],
+        i: Union[List[List[List[int]]], int] = [[[1, 2, 3]]]) -> str:
     """获取当前天气
 
     Args:
