@@ -46,7 +46,7 @@ class FunctionTool(BaseTool):
 
     @model_validator(mode="after")
     def initialize_tool(self) -> "FunctionTool":
-        """有一些参数是None，通过这个机制把默认信息填进去，初始化工具相关的属性"""
+        """有一些参数是None，通过model_validator机制把默认信息填进去，初始化工具相关的属性"""
         if self.tool_name is None:
             self.tool_name = self._get_tool_name()
         if self.tool_description is None:
@@ -85,48 +85,84 @@ class FunctionTool(BaseTool):
         # 如果都不是，就取第一行作为描述
         return doc.split("\n")[0].strip()
 
-    def _get_param_type(self, type_hint: Type) -> Dict[str, str]:
+    def _get_param_type(self, type_hint: Type) -> Dict[str, Any]:
         """获取参数类型，并转换为openai工具schema兼容的类型，考虑到部分非标准化编程的情况
         
         Args:
             type_hint (Type): 由get_type_hints函数获取的类型，兼容typing类
 
         Returns:
-            Dict[str, str]: 参数类型
+            Dict[str, Any]: 参数类型 schema
         """
         # 获取参数类型，get_origin能搞定所有typing包含的类型，但对于python内置类型如list、dict、tuple等，返回的是None，需要单独处理
+        para_type = []
+        items_type = None
+        # get_origin能搞定所有typing包含的类型，但对于python内置类型如list、dict、tuple等，返回的是None，需要单独处理
         type_ori = get_origin(type_hint)
         if type_ori:
             # 如果是typing包含的类型，还需要做一些处理，主要分为以下几种情况：
 
-            # 1. 首先对于List、Dict、Tuple这种，会直接转换为python内置类型，就直接处理
+            # 1. 首先对于List、Dict、Tuple这种，会直接转换为python内置类型，就直接处理，List要记录items的类型，用增加字段{"items": {"type": "string"}}
+
             if type_ori is list:
-                return {"type": "array"}
+                para_type.append("array")
             elif type_ori is dict:
-                return {"type": "object"}
+                para_type.append("object")
             elif type_ori is tuple:
-                return {"type": "array"}
+                para_type.append("array")
             elif type_ori is Union:
-                # 2. 其次，对于Union类型（Optional是一种特殊的Union类型），就需要进一步采用get_args获取所有可能的类型，然后进行处理，这里采用递归迭代思路
+                # 对于Union类型（包括Optional），收集所有成员的类型名称
                 args = get_args(type_hint)
+                # 因为要递归调用了，所以需要一个列表来收集
+                collected_type_names = []
                 for arg in args:
-                    print(arg)
+                    # 递归获取成员的类型 schema
+                    arg_schema = self._get_param_type(
+                        arg
+                    )  # 例如 {"type": "string"} 或 {"type": ["foo", "bar"]}
+
+                    type_value_from_arg_schema = arg_schema.get("type")
+                    if isinstance(type_value_from_arg_schema, list):
+                        # 如果arg_schema的type已经是一个列表，就说明它的可用类型已经不止一个，就extend积累列表
+                        collected_type_names.extend(type_value_from_arg_schema)
+                    elif isinstance(type_value_from_arg_schema, str):
+                        # 如果成员仅仅是一个基本类型（返回字符串），则添加字符串
+                        collected_type_names.append(type_value_from_arg_schema)
+                    # 其他情况（如 arg_schema 没有 "type" 键或类型不是 str/list）将被忽略
+
+                if not collected_type_names:
+                    # 如果没有有效的类型名称（不太可能发生），则认为是string
+                    return {"type": "string"}
+                elif len(collected_type_names) == 1:
+                    # 如果 Union 解析后只有一个唯一类型
+                    return {"type": collected_type_names[0]}
+                else:
+                    # 对于多个类型，例如 Optional[str] -> ["string", "null"]
+                    return {"type": collected_type_names}
         else:
             # 如果是None，则说明是python内置类型，那就是什么就转换成大模型能看懂的类型就好
             if type_hint is list:
-                return {"type": "array"}
+                para_type.append("array")
             elif type_hint is dict:
-                return {"type": "object"}
+                para_type.append("object")
             elif type_hint is tuple:
-                return {"type": "array"}
+                para_type.append("array")
             elif type_hint is int:
-                return {"type": "integer"}
+                para_type.append("integer")
             elif type_hint is float:
-                return {"type": "number"}
+                para_type.append("number")
             elif type_hint is bool:
-                return {"type": "boolean"}
+                para_type.append("boolean")
+            elif type_hint is type(None):  # 修正了对 NoneType 的判断
+                para_type.append("null")
             else:  # 兜底
-                return {"type": "string"}
+                para_type.append("string")
+
+        # 如果前面的逻辑未能填充 para_type（例如，对于未处理的 type_ori），则提供一个保底
+        if not para_type:
+            return {"type": "string"}
+
+        return {"type": para_type[0] if len(para_type) == 1 else para_type}
 
     def _get_tool_schema(self) -> Dict[str, Any]:
         """tool都是以函数代码的形式存在，但大模型并不能直接认识"代码"，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
@@ -422,7 +458,10 @@ async def get_current_weather(location: str,
                                   "a": 1,
                                   "b": 2
                               },
-                              g: Optional[Union[int, str]] = 1) -> str:
+                              g: Optional[Union[int, str]] = 1,
+                              h: Optional[Union[List[int],
+                                                List[str]]] = [1, 2, 3],
+                              i: List[List[List[int]]] = [[[1, 2, 3]]]) -> str:
     """获取当前天气
 
     Args:
