@@ -506,7 +506,8 @@ if __name__ == "__main__":
     # print(tool_manager.tools['get_current_weather'].__dict__)
 
     tool = FunctionTool(tool=get_current_weather)
-    print(tool.tool_schema)
+    # print(tool.tool_schema)
+    print(get_origin(List[List[List[int]]]))
 
     # func = add
     # tool_manager.register_tool(func)
