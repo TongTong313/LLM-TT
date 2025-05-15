@@ -296,6 +296,10 @@ class FunctionTool(BaseTool):
 
         return ""
 
+    def execute(self, **kwargs) -> Any:
+        """执行工具"""
+        return self.tool(**kwargs)
+
 
 class ToolManager:
     """工具管理类，管理所有的工具，期望具备的功能：

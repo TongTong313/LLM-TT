@@ -5,12 +5,40 @@ from .tool_manager import ToolManager
 from .llm import LLM
 from loguru import logger
 from ..prompt import NEXT_STEP_PROMPT, FINAL_STEP_PROMPT
+from pydantic import BaseModel, Field
 
 
-class BaseAgent:
-    """智能体基类，由工具、记忆、规划、感知等模块构建，咱们一个一个来实现
+class BaseAgent(BaseModel):
+    """智能体基类
 
-    基座智能体特点：
+    Args:
+        llm (LLM): 大模型实例
+        tool_manager (ToolManager): 工具管理器
+        memory_manager (MemoryManager): 记忆管理器
+    """
+
+    llm: LLM = Field(..., description="大模型实例")
+    tool_manager: ToolManager = Field(..., description="工具管理器")
+    memory_manager: MemoryManager = Field(..., description="记忆管理器")
+
+    class Config:
+        # 为什么要加这个配置？
+        # 因为LLM、ToolManager、MemoryManager都不是pydantic能自动校验的类型，讲白了不是python自带的而是你自己定义的类，所以要加这个配置，否则报错！
+        arbitrary_types_allowed = True
+
+    async def run(self, message: List[Dict]):
+        """运行智能体
+
+        Args:
+            message (List[Dict]): 用户的一句话query
+        """
+        raise NotImplementedError("子类必须实现run方法")
+
+
+class ToolCallingAgent(BaseAgent):
+    """ToolCallingAgent，由工具、记忆、规划、感知等模块构建，咱们一个一个来实现
+
+    ToolCallingAgent特点：
         - 一个最简单的智能体
         - 智能体规划由一个简单大模型实现
         - 只包含工具模块和记忆模块
@@ -20,27 +48,16 @@ class BaseAgent:
         - 后续的智能体可以继承这个基座智能体，并在此基础上添加更多的功能
 
     Args:
-        llm (LLM): 大模型实例，在这里主要用于任务规划
-        tool_manager (ToolManager): 工具管理器
-        memory_manager (MemoryManager): 记忆管理器
+        llm (LLM): 大模型实例，在这里主要用于任务规划（继承自BaseAgent）
+        tool_manager (ToolManager): 工具管理器（继承自BaseAgent）
+        memory_manager (MemoryManager): 记忆管理器（继承自BaseAgent）
         max_step (int): 最大步骤，默认10
     """
-
-    def __init__(self,
-                 llm: LLM,
-                 tool_manager: ToolManager,
-                 memory_manager: MemoryManager,
-                 max_step: int = 10):
-        self.llm = llm
-        self.tool_manager = tool_manager
-        self.memory_manager = memory_manager
-        self.max_step = max_step
-
-        # 时刻提醒大模型能终止
-        self.next_step_prompt = NEXT_STEP_PROMPT
-
-        # 总结性回复提示
-        self.final_step_prompt = FINAL_STEP_PROMPT
+    max_step: int = Field(default=10, description="最大步骤")
+    next_step_prompt: str = Field(default=NEXT_STEP_PROMPT,
+                                  description="下一步提示")
+    final_step_prompt: str = Field(default=FINAL_STEP_PROMPT,
+                                   description="最后一步提示")
 
     # React框架，先think（reasoning），再act
     async def think(self, message: List[Dict]):

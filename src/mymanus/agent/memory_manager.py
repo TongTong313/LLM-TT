@@ -1,16 +1,16 @@
 from typing import List, Dict, Union
+from pydantic import BaseModel, Field
 
 
-class MemoryManager:
+class MemoryManager(BaseModel):
     """记忆管理器，用于存储对话历史
     
     Args:
         max_memory (int): 最大记忆数
     """
-
-    def __init__(self, max_memory: int = 10):
-        self.memory: List[Dict[str, str]] = []
-        self.max_memory = max_memory
+    memory: List[Dict[str, str]] = Field(default_factory=list,
+                                         description="记忆")
+    max_memory: int = Field(default=10, description="最大记忆数")
 
     def add_message(self, message: Union[Dict[str, str], List[Dict[str,
                                                                    str]]]):

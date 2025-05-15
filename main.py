@@ -1,5 +1,5 @@
 from mymanus.prompt import SYSTEM_PROMPT as system_prompt
-from mymanus.agent import BaseAgent, ToolManager, MemoryManager, LLM
+from mymanus.agent import ToolCallingAgent, ToolManager, MemoryManager, LLM
 from mymanus.tool import *
 import os
 from loguru import logger
@@ -28,10 +28,10 @@ async def main():
     # 初始化记忆管理器
     memory_manager = MemoryManager(max_memory=20)
     # 初始化智能体
-    agent = BaseAgent(llm=llm,
-                      tool_manager=tool_manager,
-                      memory_manager=memory_manager,
-                      max_step=MAX_STEP)
+    agent = ToolCallingAgent(llm=llm,
+                             tool_manager=tool_manager,
+                             memory_manager=memory_manager,
+                             max_step=MAX_STEP)
 
     # 注册工具
     agent.add_tool(baidu_search, tool_name="baidu_search")
