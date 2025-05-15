@@ -21,7 +21,7 @@ async def main():
               max_tokens=8000,
               tool_choice="auto",
               stream=True,
-              enable_thinking=True)
+              enable_thinking=False)
 
     # 初始化工具管理器
     tool_manager = ToolManager()

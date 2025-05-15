@@ -16,9 +16,20 @@ class BaseTool(BaseModel):
         tool_description (Optional[str], optional): 工具描述
     """
     tool: Any = Field(..., description="工具")
-    tool_name: str = Field(..., description="工具名称")
-    tool_description: Optional[str] = Field(..., description="工具描述")
+    tool_name: str = Field(default=None, description="工具名称")
+    tool_description: Optional[str] = Field(default=None, description="工具描述")
     tool_schema: Dict[str, Any] = Field(default=None, description="工具schema")
+
+    @model_validator(mode="after")
+    def initialize_tool_info(self) -> "BaseTool":
+        """有一些参数是None，通过model_validator机制把默认信息填进去，初始化工具相关的属性"""
+        if self.tool_name is None:
+            self.tool_name = self._get_tool_name()
+        if self.tool_description is None:
+            self.tool_description = self._get_tool_description()
+        if self.tool_schema is None:
+            self.tool_schema = self._get_tool_schema()
+        return self
 
     async def execute(self, **kwargs) -> Any:
         """执行工具"""
@@ -34,27 +45,13 @@ class FunctionTool(BaseTool):
     """由python函数构成的工具描述类别
     
     Args:
-        func (Callable): 工具函数
-        tool (Any): 工具（继承自BaseTool）
+        tool (Callable): 工具函数(相比父类明确Callable类型)
         tool_name (str, optional): 工具名称，默认是函数名（继承自BaseTool）
         tool_description (Optional[str], optional): 工具描述，默认是函数文档的第一行（继承自BaseTool）
+        tool_schema (Dict[str, Any], optional): 工具schema（继承自BaseTool）
     """
     # 函数工具，就要求是Callable类型
     tool: Callable = Field(..., description="工具函数")
-    tool_name: str = Field(default=None, description="工具名称")
-    tool_description: Optional[str] = Field(default=None, description="工具描述")
-    tool_schema: Dict[str, Any] = Field(default=None, description="工具schema")
-
-    @model_validator(mode="after")
-    def initialize_tool(self) -> "FunctionTool":
-        """有一些参数是None，通过model_validator机制把默认信息填进去，初始化工具相关的属性"""
-        if self.tool_name is None:
-            self.tool_name = self._get_tool_name()
-        if self.tool_description is None:
-            self.tool_description = self._get_tool_description()
-        if self.tool_schema is None:
-            self.tool_schema = self._get_tool_schema()
-        return self
 
     def _get_tool_name(self) -> str:
         """获取工具名称"""
@@ -86,94 +83,89 @@ class FunctionTool(BaseTool):
         # 如果都不是，就取第一行作为描述
         return doc.split("\n")[0].strip()
 
-    def _get_param_type(self, type_hint: Type) -> Dict[str, Any]:
+    def _get_param_type_for_tool_schema(self,
+                                        type_hint: Type) -> Dict[str, Any]:
         """获取参数类型，并转换为openai工具schema兼容的类型，考虑到部分非标准化编程的情况
+        这个函数能用，但绝对没有涵盖所有情况^_^
         
         Args:
-            type_hint (Type): 由get_type_hints函数获取的类型，兼容typing类
+            type_hint (Type): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类
 
         Returns:
             Dict[str, Any]: 参数类型 schema
         """
         # 首先必须要搞清楚get_origin函数和get_args函数的作用
-        # get_origin函数：获取给予typing类的类型提示的原始类型（如list、dict、tuple等），但如果类型提示是python内置类型，则返回None
-        # get_args函数：获取类型提示的参数（如List[int]中的int）
+        # get_origin函数：获取给予typing类的类型提示的python原始类型（如list、dict、tuple等），但如果类型提示是python内置类型或者其他玩意，则返回None。此外，无论这个类型被嵌套了多少层，get_origin函数都仅返回最外层的类型，如List[List[List[int]]]，get_origin函数仅返回list
+        # get_args函数：如果出现类型嵌套，就返回嵌套的全部类型，如果没嵌套，就返回空tuple。例如List[List[List[int]]]，get_args函数返回(typing.List[typing.List[int]],)；Dict[str, List[int]]，get_args函数返回(<class 'str'>, typing.List[int])。对于Literal[a, b, c]，get_args函数返回(a, b, c)
 
-        # 获取参数类型，get_origin能搞定所有typing包含的类型，但对于python内置类型如list、dict、tuple等，返回的是None，需要单独处理
-        para_type = []
-        items_type = []
-        # get_origin能搞定所有typing包含的类型，但对于python内置类型如list、dict、tuple等，返回的是None，需要单独处理
-        type_ori = get_origin(type_hint)
-        if type_ori:
-            # 如果是typing包含的类型，还需要做一些处理，主要分为以下几种情况：
+        # 思路：结合ori_type和args_type来处理参数类型，因为各种嵌套咱们无法估计，所以采用递归是一个好办法，既然采用递归，那我们实际上只用考虑最简单的情况即可，把原子化能力解决完，剩下的就是递归调用自己
 
-            # 1. 首先对于List、Dict、Tuple这种，会直接输出为对应的python内置类型，其中List要记录items的类型表明每个元素是什么类型的变量，用增加字段{"items": {"type": "string"}}
+        # 接下来我们就用get_origin和get_args来
+        ori_type = get_origin(type_hint)
+        args_type = get_args(type_hint)
 
-            if type_ori is list or type_ori is tuple:
-                para_type.append("array")
-                if get_args(type_hint):
-                    items_type.append(
-                        self._get_param_type(get_args(type_hint)[0]))
-            elif type_ori is dict:
-                para_type.append("object")
-            elif type_ori is Union:
-                # 2. 对于Union类型（包括Optional，因为Optional是Union[T, None]），这都表明这个变量可以有多种类型，需要递归调用_get_param_type函数获取每个成员的类型schema，然后在把所有支持的类型拼接起来放在一起
-                args = get_args(type_hint)
-                # 因为要递归调用了，所以需要一个列表来收集
-                collected_type_names = []
-                for arg in args:
-                    # 递归获取成员的类型 schema
-                    arg_schema = self._get_param_type(arg)
+        if ori_type in [list, tuple] or type_hint in [
+                list, tuple
+        ]:  # 处理List、List[T]、Tuple、Tuple[T]，T代表任意类型（递归调用不用管T到底是什么）
+            # 判断有没有嵌套
+            # List和Tuple的嵌套只会有一个参数，比如List[str]或List[List[str]]，而不可能是List[str, int]，所以args_type = (T,)，args_type[0]就能取到元素的类型
+            # List是和Tuple需要一个额外的items字段表明每个元素的类型
+            item_type = args_type[0] if args_type else None
+            if item_type:  # 有type就加，没有type就不加这个items就好了
+                return {
+                    "type": "array",
+                    "items": self._get_param_type_for_tool_schema(
+                        item_type)  # 递归调用，万一又是一个List
+                }
+            else:
+                return {"type": "array"}
+        elif ori_type == dict or type_hint == dict:  # 处理Dict或Dict[K, V]这种情况
+            # 同样判断有没有嵌套，K不太可能嵌套，但V还可能嵌套，比如Dict[str, List[int]]
+            # 这里args_type = (K, V)，args_type[0]取到K的类型，args_type[1]取到V的类型，我们只需要分析V的类型
+            value_type = args_type[1] if args_type else None
+            if value_type:
+                return {
+                    "type":
+                    "object",
+                    "additionalProperties":
+                    self._get_param_type_for_tool_schema(value_type)
+                }
+            else:
+                return {"type": "object"}
+        elif ori_type == Literal:  # 处理Literal[a, b, c]这种情况，a、b、c同种类型
+            # 这里特殊，a、b、c直接放到enum字段里就可以
+            # 获得a、b、c的类型，注意_get_param_type_for_tool_schema函数返回的是一个字典，字典的type字段才是类型
+            literal_type = self._get_param_type_for_tool_schema(
+                type(args_type[0]))["type"]
+            return {
+                "type": literal_type,
+                "enum": list(args_type) if args_type else []
+            }
+        elif ori_type == Union:  # 处理Union或者Optional情况
+            # 用anyOf来处理，把所有可能的类型都列出来
+            return {
+                "anyOf": [
+                    self._get_param_type_for_tool_schema(arg)
+                    for arg in args_type
+                ]
+            }
 
-                    type_value_from_arg_schema = arg_schema.get("type")
-                    if isinstance(type_value_from_arg_schema, list):
-                        # 如果arg_schema的type已经是一个列表，就说明它的可用类型已经不止一个，就extend积累列表
-                        collected_type_names.extend(type_value_from_arg_schema)
-                    elif isinstance(type_value_from_arg_schema, str):
-                        # 如果成员仅仅是一个基本类型（返回字符串），则添加字符串
-                        collected_type_names.append(type_value_from_arg_schema)
-                    # 其他情况（如 arg_schema 没有 "type" 键或类型不是 str/list）将被忽略
-
-                # 保持顺序去重
-                collected_type_names = list(
-                    dict.fromkeys(collected_type_names))
-
-                if not collected_type_names:
-                    # 如果没有有效的类型名称（不太可能发生），则认为是string
-                    return {"type": "string"}
-                elif len(collected_type_names) == 1:
-                    # 如果 Union 解析后只有一个唯一类型
-                    return {"type": collected_type_names[0]}
-                else:
-                    # 对于多个类型，例如 Optional[str] -> ["string", "null"]
-                    return {"type": collected_type_names}
-        else:
-            # 如果是None，则说明是python内置类型，那就是什么就转换成大模型能看懂的类型就好
-            if type_hint is list:
-                para_type.append("array")
-            elif type_hint is dict:
-                para_type.append("object")
-            elif type_hint is tuple:
-                para_type.append("array")
-            elif type_hint is int:
-                para_type.append("integer")
-            elif type_hint is float:
-                para_type.append("number")
-            elif type_hint is bool:
-                para_type.append("boolean")
-            elif type_hint is type(None):
-                para_type.append("null")
-            else:  # 兜底
-                para_type.append("string")
-
-        # 如果前面的逻辑未能填充 para_type（例如，对于未处理的 type_ori），则提供一个保底
-        if not para_type:
+        # 到目前为止，ori_type生成typing类型的情况就处理完了，那其他情况大概率返回就是None了，我们无法从ori_type获取信息，只能从type_hint获取信息了
+        # 为啥没有list和dict？
+        if type_hint == int:
+            return {"type": "integer"}
+        elif type_hint == float:
+            return {"type": "number"}
+        elif type_hint == bool:
+            return {"type": "boolean"}
+        elif type_hint == type(None):
+            return {"type": "null"}
+        elif type_hint == str:
             return {"type": "string"}
+        elif type_hint == list:
+            return {"type": "array"}
 
-        if len(items_type) > 0:
-            return {"type": para_type[0], "items": items_type[0]}
-
-        return {"type": para_type[0] if len(para_type) == 1 else para_type}
+        return {"type": "string"}  # 保底！
 
     def _get_tool_schema(self) -> Dict[str, Any]:
         """tool都是以函数代码的形式存在，但大模型并不能直接认识"代码"，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
@@ -181,7 +173,7 @@ class FunctionTool(BaseTool):
         Returns:
             Dict: 工具schema
 
-        openai接口的工具schema样式（字典）：
+        openai接口的工具schema样式（字典）,背诵并默写：
         {
         "type": "function",
         "function": {
@@ -195,7 +187,7 @@ class FunctionTool(BaseTool):
                         "description": "City and country e.g. Bogotá, Colombia"
                     },
                     "units": {
-                        "type": ["string", "null"],
+                        "type": "string",
                         "enum": ["celsius", "fahrenheit"],
                         "description": "Units the temperature will be returned in."
                     }
@@ -203,23 +195,21 @@ class FunctionTool(BaseTool):
                     "required": ["location", "units"],
                     "additionalProperties": False
                 },
-                "strict": True
             }
         }
         """
         # 构建一个基本的工具schema模板，后面缺啥补啥
-        schema = {
+        schema_template = {
             "type": "function",
             "function": {
                 "name": self.tool_name,
                 "description": self.tool_description,
                 "parameters": {
                     "type": "object",
-                    "properties": {},  # 后面获取工具入参
-                    "required": [],  # 一旦strict=True，所有变量都是required的
+                    "properties": {},  # 后面获取工具入参类型和描述
+                    "required": [],
                     "additionalProperties": False
                 },
-                "strict": True
             }
         }
 
@@ -236,97 +226,28 @@ class FunctionTool(BaseTool):
         # 遍历所有入参
         for param_name, param in sig.parameters.items():
             param_type = type_hints.get(param_name, Any)
-            print(f"{param_name}: {self._get_param_type(param_type)}")
+            # 先把这个参数放到字典里，然后update键值对
+            schema_template["function"]["parameters"]["properties"][
+                param_name] = {}
+            schema_template["function"]["parameters"]["properties"][
+                param_name].update(
+                    self._get_param_type_for_tool_schema(param_type))
+            schema_template["function"]["parameters"]["properties"][
+                param_name]['description'] = self._get_param_description(
+                    self.tool, param_name)
 
-        # 获取函数参数类型提示：一个字典，分别描述函数的每个入参的类型和返回值的类型
-        # 例如：{'location': <class 'str'>, 'return': <class 'str'>}
-        # type_hints = inspect.get_annotations(self.tool)
-        # for param_name, param_type in sig.parameters.items():
-        #     # 获取参数类型
-        #     param_type = type_hints.get(param_name)
-        #     print(param_type)
-        #     print(f"{param_name}: {param_type}")
+            # 判断是不是必要值，没有默认值就是必要值
+            if param.default == inspect.Parameter.empty:
+                schema_template["function"]["parameters"]["required"].append(
+                    param_name)
+            else:
+                schema_template["function"]["parameters"]["properties"][
+                    param_name]['default'] = param.default
 
-        # # 获取函数参数，一个一个【入参】来
-        # for param_name, param in sig.parameters.items():
-        #     # param_name: 参数名称
-        #     # param：参数名称：类型 = 默认值（如果有）  <class 'inspect.Parameter'>
-        #     # 根据参数名称获取参数类型
-        #     param_type = type_hints.get(param_name)
-
-        #     # 检查是否是 Literal 类型
-        #     if get_origin(param_type) is Literal:
-        #         # 获取 Literal 的所有可能值
-        #         enum_values = get_args(param_type)
-        #         # 初始的类型，并没有考虑可选情况
-        #         type_ori = self._python_type_to_schema_type(
-        #             type(enum_values[0]))
-        #         # 检查是否有默认值，有默认值就是可选的
-        #         if param.default != inspect.Parameter.empty:
-        #             type_final = [type_ori, "null"]
-        #         else:
-        #             type_final = type_ori
-
-        #         # required在strict为true时，必须传入所有入参，申明一个数组
-        #         schema['function']['parameters']['required'].append(param_name)
-
-        #         # 将参数信息添加到properties中，包含enum字段
-        #         schema['function']['parameters']['properties'][param_name] = {
-        #             "type": type_final,
-        #             "enum": list(enum_values),
-        #             "description":
-        #             self._get_param_description(func, param_name),
-        #         }
-        #     else:
-        #         # 其他的类型
-        #         type_ori = self._python_type_to_schema_type(param_type)
-
-        #         # 考虑List类型
-        #         if get_origin(param_type) is list:
-        #             type_ori = "array"
-
-        #         # 检查是否有默认值，有默认值就是可选的
-        #         if param.default != inspect.Parameter.empty:
-        #             type_final = [type_ori, "null"]
-        #         else:
-        #             type_final = type_ori
-
-        #         # required在strict为true时，必须传入所有入参，申明一个数组
-        #         schema['function']['parameters']['required'].append(param_name)
-
-        #         # 将参数信息添加到properties中
-        #         schema['function']['parameters']['properties'][param_name] = {
-        #             "type": type_final,
-        #             "description":
-        #             self._get_param_description(func, param_name),
-        # }
-
-        return schema
-
-    def _python_type_to_schema_type(self, py_type: Type) -> str:
-        """将python类型转换为openai工具schema类型，主要用于函数入参的类型描述
-
-        Args:
-            py_type (Type): python类型
-            
-
-        Returns:
-            str: openai工具schema类型
-        """
-
-        type_mapping = {
-            str: "string",
-            int: "integer",
-            float: "number",
-            bool: "boolean",
-            list: "array",
-            dict: "object"
-        }
-
-        return type_mapping.get(py_type, "string")
+        return schema_template
 
     def _get_param_description(self, func: Callable, param_name: str) -> str:
-        """从函数文档中提取函数的描述
+        """从函数文档中提取函数的描述，目前仅支持Google风格注释
 
         Args:
             func (Callable): 工具函数
@@ -389,22 +310,22 @@ class ToolManager:
         self.tools: Dict[str, BaseTool] = {}  # 每一个工具都是BaseTool实例
 
     # 工具注册：让工具管理器感知到
-    def register_tool(self, func: Callable, tool_name: Optional[str] = None):
+    def register_tool(self, tool: Any, tool_name: Optional[str] = None):
         """注册工具
 
         Args:
-            func (Callable): 工具函数
+            tool (Any): 工具，形式不限
             tool_name (Optional[str]): 工具名称，默认是函数名
         """
         # 后面可能会增加工具是类的可能性，现在默认就是一个函数
         # 生成工具的名称，没有名称给一个默认的名称
         if tool_name is None:
-            tool_name = func.__name__
+            tool_name = tool.__name__
         elif tool_name in self.tools:
             warnings.warn(f"工具名称{tool_name}已存在，将覆盖原有工具")
 
         # 生成工具的实例
-        tool = FunctionTool(func=func, tool_name=tool_name)
+        tool = FunctionTool(tool=tool, tool_name=tool_name)
         self.tools[tool_name] = tool
 
     # 工具执行：执行工具，并返回结果
@@ -506,9 +427,23 @@ if __name__ == "__main__":
     # print(tool_manager.tools['get_current_weather'].__dict__)
 
     tool = FunctionTool(tool=get_current_weather)
+    print(tool.tool_schema)
     # print(tool.tool_schema)
-    print(get_origin(List[List[List[int]]]))
+    # print(get_origin(List[List[List[int]]]))
+    # print(get_args(List[List[List[int]]]))
+    # print(get_args(list))
+    # print(get_args(Dict[str, List[int]]))
+    # print(get_origin(Tuple[int]))
+    # print(get_args(Tuple))
+    # # item_type = get_args(Tuple)[0] if get_args(Tuple) else Any
+    # # print(item_type)
+    # if get_args(Tuple):
+    #     print(get_args(Tuple)[0])
+    # else:
+    #     print("None")
 
+    # print(get_origin(12345))
+    # print(get_args(None))
     # func = add
     # tool_manager.register_tool(func)
     # print(tool_manager.tools['add'].tool_schema)
