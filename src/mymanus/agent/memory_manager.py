@@ -1,11 +1,13 @@
 from typing import List, Dict, Union
 from pydantic import BaseModel, Field
+# pydantic：将Python代码的数据类型验证实体化
 
 
 class MemoryManager(BaseModel):
     """记忆管理器，用于存储对话历史
     
     Args:
+        memory (List[Dict[str, str]]): 记忆
         max_memory (int): 最大记忆数
     """
     memory: List[Dict[str, str]] = Field(default_factory=list,
@@ -35,3 +37,14 @@ class MemoryManager(BaseModel):
     def clear(self):
         """清空记忆"""
         self.memory = []
+
+
+if __name__ == "__main__":
+    MemoryManager(memory=[{
+        "role": "system",
+        "content": "你是一个AI助手，请根据用户的问题给出回答，可以采用工具调用帮助回答问题"
+    }, {
+        "role": "user",
+        "content": "123"
+    }],
+                  max_memory=13.234)
