@@ -4,7 +4,7 @@
 *.safetensors
 *.bin
 data/
-**/__pycache__/
+__pycache__/
+*.egg-info/
 results/
 .venv/
-*.egg-info/
