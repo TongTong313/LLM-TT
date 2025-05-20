@@ -4,7 +4,7 @@
 
 B站首页：[Double童发发](https://space.bilibili.com/323109608)
 
-License：[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)，请严格遵守项目协议规范，否则保留追究责任的权利。
+License：MIT License，请严格遵守项目协议规范，否则保留追究责任的权利。
 
 ## 1. 项目简介
 童发发学习大模型的过程记录，会不断更新，包含代码、部分jupyter notebook讲稿等。
