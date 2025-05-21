@@ -11,9 +11,9 @@ class BaseTool(BaseModel):
     """基础工具类，所有的类都要继承这个类
     
     Args:
-        tool (Any): 工具，形式不限
-        tool_name (str, optional): 工具名称
-        tool_description (Optional[str], optional): 工具描述
+        tool (`Any`): 工具，形式不限
+        tool_name (`str`, *optional*): 工具名称
+        tool_description (`Optional[str]`, *optional*): 工具描述
     """
     tool: Any = Field(..., description="工具")
     tool_name: str = Field(default=None, description="工具名称")
@@ -45,10 +45,10 @@ class FunctionTool(BaseTool):
     """由python函数构成的工具描述类别
     
     Args:
-        tool (Callable): 工具函数(相比父类明确Callable类型)
-        tool_name (str, optional): 工具名称，默认是函数名（继承自BaseTool）
-        tool_description (Optional[str], optional): 工具描述，默认是函数文档的第一行（继承自BaseTool）
-        tool_schema (Dict[str, Any], optional): 工具schema（继承自BaseTool）
+        tool (`Callable`): 工具函数(相比父类明确Callable类型)
+        tool_name (`str`, *optional*): 工具名称，默认是函数名（继承自BaseTool）
+        tool_description (`Optional[str]`, *optional*): 工具描述，默认是函数文档的第一行（继承自BaseTool）
+        tool_schema (`Dict[str, Any]`, *optional*): 工具schema（继承自BaseTool）
     """
     # 函数工具，就要求是Callable类型
     tool: Callable = Field(..., description="工具函数")
@@ -89,10 +89,10 @@ class FunctionTool(BaseTool):
         这个函数能用，但绝对没有涵盖所有情况^_^
         
         Args:
-            type_hint (Type): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类
+            type_hint (`Type`): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类
 
         Returns:
-            Dict[str, Any]: 参数类型 schema
+            `Dict[str, Any]`: 参数类型 schema
         """
         # 首先必须要搞清楚get_origin函数和get_args函数的作用
         # get_origin函数：获取给予typing类的类型提示的python原始类型（如list、dict、tuple等），但如果类型提示是python内置类型或者其他玩意，则返回None。此外，无论这个类型被嵌套了多少层，get_origin函数都仅返回最外层的类型，如List[List[List[int]]]，get_origin函数仅返回list
@@ -171,7 +171,7 @@ class FunctionTool(BaseTool):
         """tool都是以函数代码的形式存在，但大模型并不能直接认识"代码"，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
        
         Returns:
-            Dict: 工具schema
+            `Dict`: 工具schema
 
         openai接口的工具schema样式（字典）,背诵并默写：
         {

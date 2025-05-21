@@ -10,3 +10,6 @@ dependencies = [
     "mcp[cli]>=1.7.1",
     "openai>=1.76.2",
 ]
+
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple/"

@@ -62,6 +62,9 @@ source .venv/bin/activate
 ```
 
 ## 4. 更新日志
+- 2025.05.21
+  - 部分类改用pydantic的BaseModel
+  - python版本更新到3.13
 - 2025.05.06
   - 采用uv管理项目依赖
   - 支持qwen3模型的enable_thinking功能
