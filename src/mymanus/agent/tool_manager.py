@@ -1,19 +1,20 @@
 from pydantic import BaseModel, Field, model_validator
-from typing import Callable, get_type_hints, Dict, Any, Type, Optional, List, Literal, get_args, get_origin, Tuple, Union
-from types import NoneType
+from typing import Callable, get_type_hints, Dict, Any, Type, Optional, List, Literal, get_args, get_origin, Tuple, Union, override
 import random
 import inspect
 import warnings
+from abc import ABC, abstractmethod
 from mymanus.tool.math import add
 
 
-class BaseTool(BaseModel):
+class BaseTool(BaseModel, ABC):
     """基础工具类，所有的类都要继承这个类
     
     Args:
         tool (`Any`): 工具，形式不限
         tool_name (`str`, *optional*): 工具名称
         tool_description (`Optional[str]`, *optional*): 工具描述
+        tool_schema (`Dict[str, Any]`, *optional*): 工具schema
     """
     tool: Any = Field(..., description="工具")
     tool_name: str = Field(default=None, description="工具名称")
@@ -31,14 +32,21 @@ class BaseTool(BaseModel):
             self.tool_schema = self._get_tool_schema()
         return self
 
+    @abstractmethod
     async def execute(self, **kwargs) -> Any:
         """执行工具"""
 
-        raise NotImplementedError("子类必须实现execute方法")
+    @abstractmethod
+    def _get_tool_name(self) -> str:
+        """获取工具名称"""
 
-    def to_tool_schema(self) -> Dict:
+    @abstractmethod
+    def _get_tool_description(self) -> str:
+        """获取工具描述"""
+
+    @abstractmethod
+    def _get_tool_schema(self) -> Dict:
         """将工具转换为工具schema，用于大模型调用"""
-        raise NotImplementedError("子类必须实现to_tool_schema方法")
 
 
 class FunctionTool(BaseTool):
@@ -53,10 +61,12 @@ class FunctionTool(BaseTool):
     # 函数工具，就要求是Callable类型
     tool: Callable = Field(..., description="工具函数")
 
+    @override
     def _get_tool_name(self) -> str:
         """获取工具名称"""
         return self.tool.__name__
 
+    @override
     def _get_tool_description(self) -> str:
         """按照不同注释风格，Google和Numpy风格，都要能提取tool_description
         
@@ -296,6 +306,7 @@ class FunctionTool(BaseTool):
 
         return ""
 
+    @override
     def execute(self, **kwargs) -> Any:
         """执行工具"""
         return self.tool(**kwargs)
@@ -337,7 +348,7 @@ class ToolManager:
         """执行工具
 
         Args:
-            name (str): 工具名称
+            tool_name (`str`): 工具名称
             **kwargs: 工具入参
 
         Returns:
@@ -353,7 +364,7 @@ class ToolManager:
         """删除工具
 
         Args:
-            tool_name (str): 工具名称
+            tool_name (`str`): 工具名称
         
         Returns:
             bool: 是否删除成功
@@ -369,7 +380,7 @@ class ToolManager:
         """获取所有工具，并返回列表
 
         Returns:
-            List[FunctionTool]: 工具列表
+            `List[FunctionTool]`: 工具列表
         """
         return list(self.tools.values())
 
@@ -378,7 +389,7 @@ class ToolManager:
         """获取所有工具的schema
 
         Returns:
-            List[Dict]: 工具schema列表
+            `List[Dict]`: 工具schema列表
         """
         return [tool.tool_schema for tool in self.tools.values()]
 
