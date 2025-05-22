@@ -8,8 +8,9 @@ dependencies = [
     "baidusearch>=1.0.3",
     "loguru>=0.7.3",
     "mcp[cli]>=1.7.1",
-    "mkdocs>=1.6.1",
     "openai>=1.76.2",
+    "sphinx>=8.2.3",
+    "sphinx-rtd-theme>=3.0.2",
 ]
 
 [[tool.uv.index]]

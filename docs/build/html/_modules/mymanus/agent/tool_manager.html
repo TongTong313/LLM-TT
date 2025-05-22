@@ -1,0 +1,602 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mymanus.agent.tool_manager &mdash; LLM-TT v0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d7bb714b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LLM-TT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LLM-TT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">mymanus.agent.tool_manager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>mymanus.agent.tool_manager 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">get_type_hints</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">get_origin</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">override</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mymanus.tool.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span>
+
+
+<div class="viewcode-block" id="BaseTool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.BaseTool">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseTool</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;基础工具类，所有的类都要继承这个类</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        tool (`Any`): 工具，形式不限</span>
+<span class="sd">        tool_name (`str`, *optional*): 工具名称</span>
+<span class="sd">        tool_description (`Optional[str]`, *optional*): 工具描述</span>
+<span class="sd">        tool_schema (`Dict[str, Any]`, *optional*): 工具schema</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tool</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;工具&quot;</span><span class="p">)</span>
+    <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;工具名称&quot;</span><span class="p">)</span>
+    <span class="n">tool_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;工具描述&quot;</span><span class="p">)</span>
+    <span class="n">tool_schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;工具schema&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseTool.initialize_tool_info">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.BaseTool.initialize_tool_info">[文档]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_tool_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseTool&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;有一些参数是None，通过model_validator机制把默认信息填进去，初始化工具相关的属性&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_name</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_description</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool_description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_description</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_schema</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="BaseTool.execute">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.BaseTool.execute">[文档]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;执行工具&quot;&quot;&quot;</span></div>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tool_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取工具名称&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tool_description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取工具描述&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tool_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;将工具转换为工具schema，用于大模型调用&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="FunctionTool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.FunctionTool">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionTool</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;由python函数构成的工具描述类别</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        tool (`Callable`): 工具函数(相比父类明确Callable类型)</span>
+<span class="sd">        tool_name (`str`, *optional*): 工具名称，默认是函数名（继承自BaseTool）</span>
+<span class="sd">        tool_description (`Optional[str]`, *optional*): 工具描述，默认是函数文档的第一行（继承自BaseTool）</span>
+<span class="sd">        tool_schema (`Dict[str, Any]`, *optional*): 工具schema（继承自BaseTool）</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 函数工具，就要求是Callable类型</span>
+    <span class="n">tool</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;工具函数&quot;</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tool_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取工具名称&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tool_description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;按照不同注释风格，Google和Numpy风格，都要能提取tool_description</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: 工具描述</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="vm">__doc__</span>
+
+        <span class="c1"># 处理Google风格文档</span>
+        <span class="k">if</span> <span class="s2">&quot;Args:&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="c1"># 取Args:之前的内容作为描述</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Args:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">description</span>
+
+        <span class="c1"># 处理NumPy风格文档</span>
+        <span class="k">if</span> <span class="s2">&quot;Parameters&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="c1"># 取Parameters之前的内容作为描述</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Parameters&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">description</span>
+
+        <span class="c1"># 如果都不是，就取第一行作为描述</span>
+        <span class="k">return</span> <span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_param_type_for_tool_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                        <span class="n">type_hint</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取参数类型，并转换为openai工具schema兼容的类型，考虑到部分非标准化编程的情况</span>
+<span class="sd">        这个函数能用，但绝对没有涵盖所有情况^_^</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            type_hint (`Type`): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `Dict[str, Any]`: 参数类型 schema</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 首先必须要搞清楚get_origin函数和get_args函数的作用</span>
+        <span class="c1"># get_origin函数：获取给予typing类的类型提示的python原始类型（如list、dict、tuple等），但如果类型提示是python内置类型或者其他玩意，则返回None。此外，无论这个类型被嵌套了多少层，get_origin函数都仅返回最外层的类型，如List[List[List[int]]]，get_origin函数仅返回list</span>
+        <span class="c1"># get_args函数：如果出现类型嵌套，就返回嵌套的全部类型，如果没嵌套，就返回空tuple。例如List[List[List[int]]]，get_args函数返回(typing.List[typing.List[int]],)；Dict[str, List[int]]，get_args函数返回(&lt;class &#39;str&#39;&gt;, typing.List[int])。对于Literal[a, b, c]，get_args函数返回(a, b, c)</span>
+
+        <span class="c1"># 思路：结合ori_type和args_type来处理参数类型，因为各种嵌套咱们无法估计，所以采用递归是一个好办法，既然采用递归，那我们实际上只用考虑最简单的情况即可，把原子化能力解决完，剩下的就是递归调用自己</span>
+
+        <span class="c1"># 接下来我们就用get_origin和get_args来</span>
+        <span class="n">ori_type</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">type_hint</span><span class="p">)</span>
+        <span class="n">args_type</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_hint</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ori_type</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span> <span class="ow">or</span> <span class="n">type_hint</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span>
+        <span class="p">]:</span>  <span class="c1"># 处理List、List[T]、Tuple、Tuple[T]，T代表任意类型（递归调用不用管T到底是什么）</span>
+            <span class="c1"># 判断有没有嵌套</span>
+            <span class="c1"># List和Tuple的嵌套只会有一个参数，比如List[str]或List[List[str]]，而不可能是List[str, int]，所以args_type = (T,)，args_type[0]就能取到元素的类型</span>
+            <span class="c1"># List是和Tuple需要一个额外的items字段表明每个元素的类型</span>
+            <span class="n">item_type</span> <span class="o">=</span> <span class="n">args_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args_type</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">item_type</span><span class="p">:</span>  <span class="c1"># 有type就加，没有type就不加这个items就好了</span>
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_type_for_tool_schema</span><span class="p">(</span>
+                        <span class="n">item_type</span><span class="p">)</span>  <span class="c1"># 递归调用，万一又是一个List</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">ori_type</span> <span class="o">==</span> <span class="nb">dict</span> <span class="ow">or</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># 处理Dict或Dict[K, V]这种情况</span>
+            <span class="c1"># 同样判断有没有嵌套，K不太可能嵌套，但V还可能嵌套，比如Dict[str, List[int]]</span>
+            <span class="c1"># 这里args_type = (K, V)，args_type[0]取到K的类型，args_type[1]取到V的类型，我们只需要分析V的类型</span>
+            <span class="n">value_type</span> <span class="o">=</span> <span class="n">args_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">args_type</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">value_type</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span>
+                    <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_type_for_tool_schema</span><span class="p">(</span><span class="n">value_type</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">ori_type</span> <span class="o">==</span> <span class="n">Literal</span><span class="p">:</span>  <span class="c1"># 处理Literal[a, b, c]这种情况，a、b、c同种类型</span>
+            <span class="c1"># 这里特殊，a、b、c直接放到enum字段里就可以</span>
+            <span class="c1"># 获得a、b、c的类型，注意_get_param_type_for_tool_schema函数返回的是一个字典，字典的type字段才是类型</span>
+            <span class="n">literal_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_type_for_tool_schema</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">args_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]))[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">literal_type</span><span class="p">,</span>
+                <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">args_type</span><span class="p">)</span> <span class="k">if</span> <span class="n">args_type</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">ori_type</span> <span class="o">==</span> <span class="n">Union</span><span class="p">:</span>  <span class="c1"># 处理Union或者Optional情况</span>
+            <span class="c1"># 用anyOf来处理，把所有可能的类型都列出来</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;anyOf&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_type_for_tool_schema</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args_type</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+
+        <span class="c1"># 到目前为止，ori_type生成typing类型的情况就处理完了，那其他情况大概率返回就是None了，我们无法从ori_type获取信息，只能从type_hint获取信息了</span>
+        <span class="c1"># 为啥没有list和dict？</span>
+        <span class="k">if</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;number&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;null&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">type_hint</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}</span>  <span class="c1"># 保底！</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tool_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;tool都是以函数代码的形式存在，但大模型并不能直接认识&quot;代码&quot;，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。</span>
+<span class="sd">       </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            `Dict`: 工具schema</span>
+
+<span class="sd">        openai接口的工具schema样式（字典）,背诵并默写：</span>
+<span class="sd">        {</span>
+<span class="sd">        &quot;type&quot;: &quot;function&quot;,</span>
+<span class="sd">        &quot;function&quot;: {</span>
+<span class="sd">            &quot;name&quot;: &quot;get_weather&quot;,</span>
+<span class="sd">            &quot;description&quot;: &quot;Retrieves current weather for the given location.&quot;,</span>
+<span class="sd">            &quot;parameters&quot;: {</span>
+<span class="sd">                &quot;type&quot;: &quot;object&quot;,</span>
+<span class="sd">                &quot;properties&quot;: {</span>
+<span class="sd">                    &quot;location&quot;: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;string&quot;,</span>
+<span class="sd">                        &quot;description&quot;: &quot;City and country e.g. Bogotá, Colombia&quot;</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;units&quot;: {</span>
+<span class="sd">                        &quot;type&quot;: &quot;string&quot;,</span>
+<span class="sd">                        &quot;enum&quot;: [&quot;celsius&quot;, &quot;fahrenheit&quot;],</span>
+<span class="sd">                        &quot;description&quot;: &quot;Units the temperature will be returned in.&quot;</span>
+<span class="sd">                    }</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;required&quot;: [&quot;location&quot;, &quot;units&quot;],</span>
+<span class="sd">                    &quot;additionalProperties&quot;: False</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 构建一个基本的工具schema模板，后面缺啥补啥</span>
+        <span class="n">schema_template</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_name</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_description</span><span class="p">,</span>
+                <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span>  <span class="c1"># 后面获取工具入参类型和描述</span>
+                    <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c1"># 获取函数签名</span>
+        <span class="c1"># 例如：(location: str, units: Optional[str] = &#39;celsius&#39;) -&gt; str</span>
+        <span class="c1"># 目标就是可以遍历所有的入参 问题：为什么出参不用分析？</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">)</span>
+
+        <span class="c1"># 获取所有入参的类型，通过get_type_hints函数获取的类型可以兼容typing类</span>
+        <span class="c1"># 例如：{&#39;location&#39;: &lt;class &#39;str&#39;&gt;, &#39;units&#39;: &lt;class &#39;typing.Optional&#39;&gt;, &#39;return&#39;: &lt;class &#39;str&#39;&gt;}</span>
+        <span class="c1"># 等价于inspect.get_annotations(self.tool)</span>
+        <span class="n">type_hints</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">)</span>
+
+        <span class="c1"># 遍历所有入参</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">param_type</span> <span class="o">=</span> <span class="n">type_hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">Any</span><span class="p">)</span>
+            <span class="c1"># 先把这个参数放到字典里，然后update键值对</span>
+            <span class="n">schema_template</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span>
+                <span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">schema_template</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span>
+                <span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_type_for_tool_schema</span><span class="p">(</span><span class="n">param_type</span><span class="p">))</span>
+            <span class="n">schema_template</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span>
+                <span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param_description</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span>
+
+            <span class="c1"># 判断是不是必要值，没有默认值就是必要值</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">schema_template</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">param_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">schema_template</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span>
+                    <span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
+
+        <span class="k">return</span> <span class="n">schema_template</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_param_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;从函数文档中提取函数的描述，目前仅支持Google风格注释</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            func (Callable): 工具函数</span>
+<span class="sd">            param_name (str): 参数名称</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: 参数描述</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># 从函数文档中提取参数描述</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="n">doc_lines</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 先找到Args出现的地方，然后下面每行冒号后面都是参数的描述，冒号有可能是中文的冒号也可能是英文的冒号</span>
+        <span class="n">arg_start_line_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">doc_lines</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;Args&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">arg_start_line_index</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">arg_start_line_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arg_start_line_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc_lines</span><span class="p">)):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">doc_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># 空行跳过</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># 如果遇到下一个主要部分（如Returns:），则停止循环，因为参数信息都有了</span>
+            <span class="c1"># 同时考虑中文和英文冒号</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                                                      <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;：&#39;</span><span class="p">)):</span>
+                <span class="k">break</span>
+
+            <span class="c1"># 如果遇到参数名称，则提取参数名称后面的内容，同时考虑中文和英文冒号</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">param_name</span><span class="p">):</span>
+                <span class="c1"># 如果存在中文冒号，则提取中文冒号后面的内容</span>
+                <span class="k">if</span> <span class="s1">&#39;：&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;：&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">description</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+<div class="viewcode-block" id="FunctionTool.execute">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.FunctionTool.execute">[文档]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;执行工具&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ToolManager">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.ToolManager">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;工具管理类，管理所有的工具，期望具备的功能：</span>
+<span class="sd">    1. 工具注册：让工具管理器感知到，包括生成对应的schema保存起来</span>
+<span class="sd">    2. 工具执行：执行工具，并返回结果</span>
+<span class="sd">    3. 工具删除：删除工具</span>
+<span class="sd">    4. 工具列表：获取所有工具列表</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 初始化类</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># 每一个工具都是BaseTool实例</span>
+
+    <span class="c1"># 工具注册：让工具管理器感知到</span>
+<div class="viewcode-block" id="ToolManager.register_tool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.ToolManager.register_tool">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;注册工具</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tool (Any): 工具，形式不限</span>
+<span class="sd">            tool_name (Optional[str]): 工具名称，默认是函数名</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 后面可能会增加工具是类的可能性，现在默认就是一个函数</span>
+        <span class="c1"># 生成工具的名称，没有名称给一个默认的名称</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tool_name</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">elif</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工具名称</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">已存在，将覆盖原有工具&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 生成工具的实例</span>
+        <span class="n">tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">tool</span><span class="o">=</span><span class="n">tool</span><span class="p">,</span> <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span></div>
+
+
+    <span class="c1"># 工具执行：执行工具，并返回结果</span>
+<div class="viewcode-block" id="ToolManager.execute_tool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.ToolManager.execute_tool">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;执行工具</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tool_name (`str`): 工具名称</span>
+<span class="sd">            **kwargs: 工具入参</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: 工具返回结果</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工具名称</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">不存在&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="c1"># 工具删除：删除工具</span>
+<div class="viewcode-block" id="ToolManager.delete_tool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.ToolManager.delete_tool">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;删除工具</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tool_name (`str`): 工具名称</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: 是否删除成功</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># 工具列表：获取所有工具列表</span>
+<div class="viewcode-block" id="ToolManager.get_tool_list">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.ToolManager.get_tool_list">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tool_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取所有工具，并返回列表</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `List[FunctionTool]`: 工具列表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+    <span class="c1"># 获取所有的schema</span>
+<div class="viewcode-block" id="ToolManager.get_tool_schema_list">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.ToolManager.get_tool_schema_list">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tool_schema_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取所有工具的schema</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `List[Dict]`: 工具schema列表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">tool_schema</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
+</div>
+
+
+
+<span class="c1"># 模拟天气查询工具。返回结果示例：&quot;北京今天是雨天。&quot;</span>
+<div class="viewcode-block" id="get_current_weather">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.tool_manager.get_current_weather">[文档]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_weather</span><span class="p">(</span>
+        <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;celsius&quot;</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="n">c</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="n">d</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">f</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="p">},</span>
+        <span class="n">g</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">h</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="n">i</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;获取当前天气</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        location (str): 城市名称</span>
+<span class="sd">        units (Optional[str]): 温度单位，可选值为&quot;celsius&quot;或&quot;fahrenheit&quot;，默认值为&quot;celsius&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: 天气信息</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 定义备选的天气条件列表</span>
+    <span class="n">weather_conditions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;晴天&quot;</span><span class="p">,</span> <span class="s2">&quot;多云&quot;</span><span class="p">,</span> <span class="s2">&quot;雨天&quot;</span><span class="p">]</span>
+    <span class="c1"># 随机选择一个天气条件</span>
+    <span class="n">random_weather</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">weather_conditions</span><span class="p">)</span>
+    <span class="c1"># 随机选择一个温度</span>
+    <span class="n">random_temperature</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="c1"># 摄氏度转华氏度</span>
+    <span class="c1"># 根据units返回</span>
+    <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;celsius&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">今天是</span><span class="si">{</span><span class="n">random_weather</span><span class="si">}</span><span class="s2">，温度是</span><span class="si">{</span><span class="n">random_temperature</span><span class="si">}</span><span class="s2">度。&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">random_temperature</span> <span class="o">=</span> <span class="n">random_temperature</span> <span class="o">*</span> <span class="mf">1.8</span> <span class="o">+</span> <span class="mi">32</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">今天是</span><span class="si">{</span><span class="n">random_weather</span><span class="si">}</span><span class="s2">，温度是</span><span class="si">{</span><span class="n">random_temperature</span><span class="si">}</span><span class="s2">华氏度。&quot;</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># func = get_current_weather</span>
+    <span class="c1"># tool_manager = ToolManager()</span>
+    <span class="c1"># tool_manager.register_tool(func)</span>
+    <span class="c1"># print(tool_manager.tools[&#39;get_current_weather&#39;].__dict__)</span>
+
+    <span class="n">tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">tool</span><span class="o">=</span><span class="n">get_current_weather</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">tool_schema</span><span class="p">)</span>
+    <span class="c1"># print(tool.tool_schema)</span>
+    <span class="c1"># print(get_origin(List[List[List[int]]]))</span>
+    <span class="c1"># print(get_args(List[List[List[int]]]))</span>
+    <span class="c1"># print(get_args(list))</span>
+    <span class="c1"># print(get_args(Dict[str, List[int]]))</span>
+    <span class="c1"># print(get_origin(Tuple[int]))</span>
+    <span class="c1"># print(get_args(Tuple))</span>
+    <span class="c1"># # item_type = get_args(Tuple)[0] if get_args(Tuple) else Any</span>
+    <span class="c1"># # print(item_type)</span>
+    <span class="c1"># if get_args(Tuple):</span>
+    <span class="c1">#     print(get_args(Tuple)[0])</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     print(&quot;None&quot;)</span>
+
+    <span class="c1"># print(get_origin(12345))</span>
+    <span class="c1"># print(get_args(None))</span>
+    <span class="c1"># func = add</span>
+    <span class="c1"># tool_manager.register_tool(func)</span>
+    <span class="c1"># print(tool_manager.tools[&#39;add&#39;].tool_schema)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Tong Tong。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

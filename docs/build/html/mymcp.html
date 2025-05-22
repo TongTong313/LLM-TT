@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mymcp package &mdash; LLM-TT v0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d7bb714b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="mymcp.tool package" href="mymcp.tool.html" />
+    <link rel="prev" title="mymanus.tool package" href="mymanus.tool.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LLM-TT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mymanus.html">mymanus package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mymcp package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mymcp.tool.html">mymcp.tool package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mymcp.client">mymcp.client module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mymcp.client.MCPClient"><code class="docutils literal notranslate"><span class="pre">MCPClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mymcp.mcp_adapter">mymcp.mcp_adapter module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mymcp.mcp_adapter.BaseMCPAdapter"><code class="docutils literal notranslate"><span class="pre">BaseMCPAdapter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mymcp.mcp_adapter.MCPOpenAIAdapter"><code class="docutils literal notranslate"><span class="pre">MCPOpenAIAdapter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mymcp.server">mymcp.server module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mymcp.server.MCPServer"><code class="docutils literal notranslate"><span class="pre">MCPServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mymcp.server.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mymcp.test">mymcp.test module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mymcp.test.add"><code class="docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mymcp">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LLM-TT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">mymcp package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mymcp.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mymcp-package">
+<h1>mymcp package<a class="headerlink" href="#mymcp-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mymcp.tool.html">mymcp.tool package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.tool.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.tool.html#module-mymcp.tool.general">mymcp.tool.general module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mymcp.tool.html#mymcp.tool.general.get_current_time"><code class="docutils literal notranslate"><span class="pre">get_current_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mymcp.tool.html#mymcp.tool.general.get_current_weather"><code class="docutils literal notranslate"><span class="pre">get_current_weather()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.tool.html#module-mymcp.tool.math">mymcp.tool.math module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mymcp.tool.html#mymcp.tool.math.add"><code class="docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.tool.html#module-mymcp.tool.search">mymcp.tool.search module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mymcp.tool.html#mymcp.tool.search.baidu_search"><code class="docutils literal notranslate"><span class="pre">baidu_search()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.tool.html#module-mymcp.tool.terminate">mymcp.tool.terminate module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mymcp.tool.html#mymcp.tool.terminate.terminate"><code class="docutils literal notranslate"><span class="pre">terminate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.tool.html#module-mymcp.tool">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-mymcp.client">
+<span id="mymcp-client-module"></span><h2>mymcp.client module<a class="headerlink" href="#module-mymcp.client" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymcp.client.MCPClient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymcp.client.</span></span><span class="sig-name descname"><span class="pre">MCPClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adapter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymcp.mcp_adapter.BaseMCPAdapter" title="mymcp.mcp_adapter.BaseMCPAdapter"><span class="pre">BaseMCPAdapter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/client.html#MCPClient"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.client.MCPClient" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.client.MCPClient.connect_to_mcp_server_sse">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect_to_mcp_server_sse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/client.html#MCPClient.connect_to_mcp_server_sse"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.client.MCPClient.connect_to_mcp_server_sse" title="Link to this definition"></a></dt>
+<dd><p>使用SSE模式连接到MCP服务端(测试中……)</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>server_url</strong> (<em>str</em>) -- MCP服务端的SSE URL</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.client.MCPClient.connect_to_mcp_server_stdio">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect_to_mcp_server_stdio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_script_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/client.html#MCPClient.connect_to_mcp_server_stdio"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.client.MCPClient.connect_to_mcp_server_stdio" title="Link to this definition"></a></dt>
+<dd><p>连接到一个MCP服务端 stdio模式</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>server_script_path</strong> (<em>str</em>) -- Path to the server script (.py or .js)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.client.MCPClient.process_query">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/client.html#MCPClient.process_query"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.client.MCPClient.process_query" title="Link to this definition"></a></dt>
+<dd><p>处理用户需求，结合大模型和MCP Server的工具调用
+客户端向服务端发送一个query请求，服务端返回执行结果</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mymcp.mcp_adapter">
+<span id="mymcp-mcp-adapter-module"></span><h2>mymcp.mcp_adapter module<a class="headerlink" href="#module-mymcp.mcp_adapter" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymcp.mcp_adapter.BaseMCPAdapter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymcp.mcp_adapter.</span></span><span class="sig-name descname"><span class="pre">BaseMCPAdapter</span></span><a class="reference internal" href="_modules/mymcp/mcp_adapter.html#BaseMCPAdapter"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.mcp_adapter.BaseMCPAdapter" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>MCP适配器基类，把MCP的工具schema转换为openai的工具schema</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.mcp_adapter.BaseMCPAdapter.convert_to_tool_schema">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_to_tool_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/mymcp/mcp_adapter.html#BaseMCPAdapter.convert_to_tool_schema"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.mcp_adapter.BaseMCPAdapter.convert_to_tool_schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mymcp.mcp_adapter.MCPOpenAIAdapter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymcp.mcp_adapter.</span></span><span class="sig-name descname"><span class="pre">MCPOpenAIAdapter</span></span><a class="reference internal" href="_modules/mymcp/mcp_adapter.html#MCPOpenAIAdapter"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.mcp_adapter.MCPOpenAIAdapter" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#mymcp.mcp_adapter.BaseMCPAdapter" title="mymcp.mcp_adapter.BaseMCPAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMCPAdapter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.mcp_adapter.MCPOpenAIAdapter.convert_to_tool_schema">
+<span class="sig-name descname"><span class="pre">convert_to_tool_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/mymcp/mcp_adapter.html#MCPOpenAIAdapter.convert_to_tool_schema"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.mcp_adapter.MCPOpenAIAdapter.convert_to_tool_schema" title="Link to this definition"></a></dt>
+<dd><p>将MCP tool中的字段转换为openai接口需要的tool_schema</p>
+<blockquote>
+<div><p>举例：
+- 对于MCP它的工具形式
+[Tool(name='get_current_time', description='查询当前时间的工具。返回结果示例：“当前时间：2024-04-15 17:15:18。“</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>当前时间</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<p>', inputSchema={'properties': {}, 'title': 'get_current_timeArguments', 'type': 'object'}), Tool(name='add', description='加法工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) -- 加数</p></li>
+<li><p><strong>b</strong> (<em>float</em>) -- 加数</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>和</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p>', inputSchema={'properties': {'a': {'title': 'A', 'type': 'number'}, 'b': {'title': 'B', 'type': 'number'}}, 'required': ['a', 'b'], 'title': 'addArguments', 'type': 'object'}), Tool(name='baidu_search', description='百度搜索工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) -- 搜索关键词</p></li>
+<li><p><strong>num_results</strong> (<em>int</em><em>, </em><em>optional</em>) -- 搜索结果数量，默认10条.</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>格式化的搜索结果</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p>', inputSchema={'properties': {'query': {'title': 'Query', 'type': 'string'}, 'num_results': {'default': 10, 'title': 'Num Results', 'type': 'integer'}}, 'required': ['query'], 'title': 'baidu_searchArguments', 'type': 'object'}), Tool(name='get_current_weather', description='查询当前天气的工具。返回结果示例：“北京今天是雨天。”</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>location</strong> (<em>str</em>) -- 城市名称</p></li>
+<li><p><strong>units</strong> (<em>Optional</em><em>[</em><em>Literal</em><em>[</em><em>&quot;celsius&quot;</em><em>, </em><em>&quot;fahrenheit&quot;</em><em>]</em><em>]</em><em>, </em><em>optional</em>) -- 温度单位.</p></li>
+<li><p><strong>默认是摄氏度，可选摄氏度或华氏度</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>当前天气</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p>', inputSchema={'properties': {'location': {'title': 'Location', 'type': 'string'}, 'units': {'anyOf': [{'enum': ['celsius', 'fahrenheit'], 'type': 'string'}, {'type': 'null'}], 'default': 'celsius', 'title': 'Units'}}, 'required': ['location'], 'title': 'get_current_weatherArguments', 'type': 'object'})]</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>对于openai它的工具形式</p></li>
+</ul>
+<dl>
+<dt>{</dt><dd><p>&quot;type&quot;: &quot;function&quot;,
+&quot;function&quot;: {</p>
+<blockquote>
+<div><p>&quot;name&quot;: &quot;get_weather&quot;,
+&quot;description&quot;: &quot;Retrieves current weather for the given location.&quot;,
+&quot;parameters&quot;: {</p>
+<blockquote>
+<div><p>&quot;type&quot;: &quot;object&quot;,
+&quot;properties&quot;: {</p>
+<blockquote>
+<div><dl class="simple">
+<dt>&quot;location&quot;: {</dt><dd><p>&quot;type&quot;: &quot;string&quot;,
+&quot;description&quot;: &quot;City and country e.g. Bogotá, Colombia&quot;</p>
+</dd>
+</dl>
+<p>},
+&quot;units&quot;: {</p>
+<blockquote>
+<div><p>&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;],
+&quot;enum&quot;: [&quot;celsius&quot;, &quot;fahrenheit&quot;],
+&quot;description&quot;: &quot;Units the temperature will be returned in.&quot;</p>
+</div></blockquote>
+<p>}
+},
+&quot;required&quot;: [&quot;location&quot;, &quot;units&quot;],
+&quot;additionalProperties&quot;: False</p>
+</div></blockquote>
+<p>},
+&quot;strict&quot;: True</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+</dd>
+</dl>
+<p>目标就是把MCP tool的工具转换成openai接受的tool_schema</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>tools (List[mcp.server.fastmcp.tools.base.Tool]): MCP tool列表</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[dict]: openai接受的tool_schema</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mymcp.server">
+<span id="mymcp-server-module"></span><h2>mymcp.server module<a class="headerlink" href="#module-mymcp.server" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymcp.server.MCPServer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymcp.server.</span></span><span class="sig-name descname"><span class="pre">MCPServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'demo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DEBUG'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/server.html#MCPServer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.server.MCPServer" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>MCP server</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.server.MCPServer.register_tool">
+<span class="sig-name descname"><span class="pre">register_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/server.html#MCPServer.register_tool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.server.MCPServer.register_tool" title="Link to this definition"></a></dt>
+<dd><p>注册工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool</strong> (<em>Callable</em>) -- 工具函数</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) -- 工具名称，可选</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) -- 工具描述，可选</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymcp.server.MCPServer.run">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transport</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stdio'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/server.html#MCPServer.run"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.server.MCPServer.run" title="Link to this definition"></a></dt>
+<dd><p>运行MCP服务器</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transport</strong> (<em>str</em><em>, </em><em>optional</em>) -- 传输方式，可选值为 &quot;stdio&quot; 或 &quot;sse&quot;，默认值为 &quot;stdio&quot;。</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mymcp.server.main">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymcp.server.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/server.html#main"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.server.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mymcp.test">
+<span id="mymcp-test-module"></span><h2>mymcp.test module<a class="headerlink" href="#module-mymcp.test" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mymcp.test.add">
+<span class="sig-prename descclassname"><span class="pre">mymcp.test.</span></span><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymcp/test.html#add"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymcp.test.add" title="Link to this definition"></a></dt>
+<dd><p>Add two numbers together</p>
+</dd></dl>
+
+</section>
+<section id="module-mymcp">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mymcp" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="mymanus.tool.html" class="btn btn-neutral float-left" title="mymanus.tool package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="mymcp.tool.html" class="btn btn-neutral float-right" title="mymcp.tool package" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Tong Tong。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

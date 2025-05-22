@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mymanus.agent package &mdash; LLM-TT v0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d7bb714b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="mymanus.logger package" href="mymanus.logger.html" />
+    <link rel="prev" title="mymanus package" href="mymanus.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LLM-TT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mymanus.html">mymanus package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="mymanus.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">mymanus.agent package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mymanus.logger.html">mymanus.logger package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mymanus.prompt.html">mymanus.prompt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mymanus.tool.html">mymanus.tool package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mymanus.html#module-mymanus">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mymcp.html">mymcp package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LLM-TT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+          <li class="breadcrumb-item"><a href="mymanus.html">mymanus package</a></li>
+      <li class="breadcrumb-item active">mymanus.agent package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mymanus.agent.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mymanus-agent-package">
+<h1>mymanus.agent package<a class="headerlink" href="#mymanus-agent-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-mymanus.agent.agent">
+<span id="mymanus-agent-agent-module"></span><h2>mymanus.agent.agent module<a class="headerlink" href="#module-mymanus.agent.agent" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.agent.</span></span><span class="sig-name descname"><span class="pre">BaseAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymanus.agent.llm.LLM" title="mymanus.agent.llm.LLM"><span class="pre">LLM</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymanus.agent.tool_manager.ToolManager" title="mymanus.agent.tool_manager.ToolManager"><span class="pre">ToolManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymanus.agent.memory_manager.MemoryManager" title="mymanus.agent.memory_manager.MemoryManager"><span class="pre">MemoryManager</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#BaseAgent"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.BaseAgent" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>智能体基类</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>llm</strong> (<a class="reference internal" href="#mymanus.agent.llm.LLM" title="mymanus.agent.llm.LLM"><em>LLM</em></a>) -- 大模型实例</p></li>
+<li><p><strong>tool_manager</strong> (<a class="reference internal" href="#mymanus.agent.tool_manager.ToolManager" title="mymanus.agent.tool_manager.ToolManager"><em>ToolManager</em></a>) -- 工具管理器</p></li>
+<li><p><strong>memory_manager</strong> (<a class="reference internal" href="#mymanus.agent.memory_manager.MemoryManager" title="mymanus.agent.memory_manager.MemoryManager"><em>MemoryManager</em></a>) -- 记忆管理器</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.Config">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/mymanus/agent/agent.html#BaseAgent.Config"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.Config" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.Config.arbitrary_types_allowed">
+<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.Config.arbitrary_types_allowed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.llm">
+<span class="sig-name descname"><span class="pre">llm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mymanus.agent.llm.LLM" title="mymanus.agent.llm.LLM"><span class="pre">LLM</span></a></em><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.llm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.memory_manager">
+<span class="sig-name descname"><span class="pre">memory_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mymanus.agent.memory_manager.MemoryManager" title="mymanus.agent.memory_manager.MemoryManager"><span class="pre">MemoryManager</span></a></em><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.memory_manager" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></em><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.run">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#BaseAgent.run"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.run" title="Link to this definition"></a></dt>
+<dd><p>运行智能体</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) -- 用户的一句话query</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.BaseAgent.tool_manager">
+<span class="sig-name descname"><span class="pre">tool_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mymanus.agent.tool_manager.ToolManager" title="mymanus.agent.tool_manager.ToolManager"><span class="pre">ToolManager</span></a></em><a class="headerlink" href="#mymanus.agent.agent.BaseAgent.tool_manager" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.agent.</span></span><span class="sig-name descname"><span class="pre">ToolCallingAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymanus.agent.llm.LLM" title="mymanus.agent.llm.LLM"><span class="pre">LLM</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymanus.agent.tool_manager.ToolManager" title="mymanus.agent.tool_manager.ToolManager"><span class="pre">ToolManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mymanus.agent.memory_manager.MemoryManager" title="mymanus.agent.memory_manager.MemoryManager"><span class="pre">MemoryManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_step_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'\n你需要谨慎根据上一步的结果，执行下一步的的操作\n#</span> <span class="pre">注意事项\n1.</span> <span class="pre">在任务完成时，请调用`terminate`工具即可\n2.</span> <span class="pre">面对调用搜索工具的场景，可以根据搜索结果的标题和摘要的内容形成总结回复用户，也可返回对应链接让用户自己搜索\n3.</span> <span class="pre">在闲聊时，请直接调用`terminate`工具，例如：你好、再见、你是谁等\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_step_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'\n请根据上下文信息，对用户提出的需求或问题给与一个总结性的回复。\n#</span> <span class="pre">注意事项：\n1.</span> <span class="pre">给用户一个总结性结果回复\n2.</span> <span class="pre">你不能输出任何工具调用的信息\n3.</span> <span class="pre">不要在回复末尾生成`terminate`字符\n4.</span> <span class="pre">不要输出任何与用户提问无关的内容\n5.</span> <span class="pre">回复尽可能结构化分点陈述\n6.</span> <span class="pre">如果设计搜索的网页url，在回复中也要提供\n'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#mymanus.agent.agent.BaseAgent" title="mymanus.agent.agent.BaseAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAgent</span></code></a></p>
+<p>ToolCallingAgent，由工具、记忆、规划、感知等模块构建，咱们一个一个来实现</p>
+<dl class="simple">
+<dt>ToolCallingAgent特点：</dt><dd><ul class="simple">
+<li><p>一个最简单的智能体</p></li>
+<li><p>智能体规划由一个简单大模型实现</p></li>
+<li><p>只包含工具模块和记忆模块</p></li>
+<li><p>具备React框架，先think，再act</p></li>
+<li><p>支持基本的对话功能</p></li>
+<li><p>支持工具调用</p></li>
+<li><p>后续的智能体可以继承这个基座智能体，并在此基础上添加更多的功能</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>llm</strong> (<a class="reference internal" href="#mymanus.agent.llm.LLM" title="mymanus.agent.llm.LLM"><em>LLM</em></a>) -- 大模型实例，在这里主要用于任务规划（继承自BaseAgent）</p></li>
+<li><p><strong>tool_manager</strong> (<a class="reference internal" href="#mymanus.agent.tool_manager.ToolManager" title="mymanus.agent.tool_manager.ToolManager"><em>ToolManager</em></a>) -- 工具管理器（继承自BaseAgent）</p></li>
+<li><p><strong>memory_manager</strong> (<a class="reference internal" href="#mymanus.agent.memory_manager.MemoryManager" title="mymanus.agent.memory_manager.MemoryManager"><em>MemoryManager</em></a>) -- 记忆管理器（继承自BaseAgent）</p></li>
+<li><p><strong>max_step</strong> (<em>int</em>) -- 最大步骤，默认10</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.act">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent.act"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.act" title="Link to this definition"></a></dt>
+<dd><p>调用对应工具返回结果，并将返回结构通过assistant message返回，需要注意，一旦调用工具还需要反馈assistant message，要把函数运行结果返回给大模型做下一步的计划</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) -- 消息列表</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>是否执行完所有的工具</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.add_tool">
+<span class="sig-name descname"><span class="pre">add_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent.add_tool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.add_tool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.final_step_prompt">
+<span class="sig-name descname"><span class="pre">final_step_prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.final_step_prompt" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.max_step">
+<span class="sig-name descname"><span class="pre">max_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.max_step" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></em><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.next_step_prompt">
+<span class="sig-name descname"><span class="pre">next_step_prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.next_step_prompt" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.run">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent.run"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.run" title="Link to this definition"></a></dt>
+<dd><p>运行完整轮数的react过程</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) -- 用户的一句话query</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.run_step">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent.run_step"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.run_step" title="Link to this definition"></a></dt>
+<dd><p>运行一个react步骤，包括一次think和一次act</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) -- 消息列表</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>是否是最后一步，达到终止条件</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.think">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">think</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent.think"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.think" title="Link to this definition"></a></dt>
+<dd><p>使用大模型进行思考，返回是否需要使用工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) -- 消息列表</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>是否需要使用工具</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.agent.ToolCallingAgent.tool">
+<span class="sig-name descname"><span class="pre">tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/agent.html#ToolCallingAgent.tool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.agent.ToolCallingAgent.tool" title="Link to this definition"></a></dt>
+<dd><p>类似MCP协议，用装饰器直接注册工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>Callable</em>) -- 要注册的工具函数</p></li>
+<li><p><strong>tool_name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) -- 工具名称，如果为None，则使用函数名作为工具名称</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mymanus.agent.llm">
+<span id="mymanus-agent-llm-module"></span><h2>mymanus.agent.llm module<a class="headerlink" href="#module-mymanus.agent.llm" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.llm.LLM">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.llm.</span></span><span class="sig-name descname"><span class="pre">LLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'qwen-plus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_choice</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'required'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_thinking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/llm.html#LLM"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.llm.LLM" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>大模型类，可用于agent中作为大脑用来规划和执行任务，基于openai接口规范</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>str</em>) -- 大模型api key，如果是本地部署的大模型例如vllm，需要设置api_key为&quot;EMPTY&quot;。</p></li>
+<li><p><strong>base_url</strong> (<em>str</em>) -- 大模型base url。</p></li>
+<li><p><strong>model</strong> (<em>str</em><em>, </em><em>optional</em>) -- 大模型名称，默认&quot;qwen-plus&quot;。</p></li>
+<li><p><strong>tool_choice</strong> (<em>str</em><em>, </em><em>optional</em>) -- 工具选择模式，包括&quot;auto&quot;, &quot;required&quot;, &quot;none&quot;，默认&quot;auto&quot;。</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) -- 温度，控制大模型生成结果的随机性，越大随机性越强，默认0.7。</p></li>
+<li><p><strong>max_tokens</strong> (<em>int</em><em>, </em><em>optional</em>) -- 最大tokens，默认1000。</p></li>
+<li><p><strong>stream</strong> (<em>bool</em><em>, </em><em>optional</em>) -- 是否流式输出，默认False。</p></li>
+<li><p><strong>enable_thinking</strong> (<em>bool</em><em>, </em><em>optional</em>) -- 是否启用大模型思考模式，仅在使用qwen3模型时有效，默认是None，表示该大模型不具备思考模式切换能力。</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.llm.LLM.chat">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_choice</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'required'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_thinking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/mymanus/agent/llm.html#LLM.chat"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.llm.LLM.chat" title="Link to this definition"></a></dt>
+<dd><p>与大模型进行交互对话</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) -- 对话历史记录</p></li>
+<li><p><strong>tools</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>optional</em>) -- 可用的工具列表（function schema格式）。 Defaults to None.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em><em>, </em><em>optional</em>) -- 温度，控制大模型生成结果的随机性，越大随机性越强，默认使用类初始化时的温度。</p></li>
+<li><p><strong>max_tokens</strong> (<em>int</em><em>, </em><em>optional</em>) -- 最大tokens，默认使用类初始化时的最大tokens。</p></li>
+<li><p><strong>tool_choice</strong> (<em>str</em><em>, </em><em>optional</em>) -- 工具选择模式，包括&quot;auto&quot;, &quot;required&quot;, &quot;none&quot;，默认使用类初始化时的工具选择模式。</p></li>
+<li><p><strong>stream</strong> (<em>bool</em><em>, </em><em>optional</em>) -- 是否流式输出，默认使用类初始化时的流式输出。</p></li>
+<li><p><strong>enable_thinking</strong> (<em>bool</em><em>, </em><em>optional</em>) -- 是否启用大模型思考模式，仅在使用qwen3模型时有效，默认使用类初始化时的思考模式。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>openai格式的回复类</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ChatCompletionMessage</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mymanus.agent.mcp_agent">
+<span id="mymanus-agent-mcp-agent-module"></span><h2>mymanus.agent.mcp_agent module<a class="headerlink" href="#module-mymanus.agent.mcp_agent" title="Link to this heading"></a></h2>
+</section>
+<section id="module-mymanus.agent.memory_manager">
+<span id="mymanus-agent-memory-manager-module"></span><h2>mymanus.agent.memory_manager module<a class="headerlink" href="#module-mymanus.agent.memory_manager" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.memory_manager.</span></span><span class="sig-name descname"><span class="pre">MemoryManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory:</span> <span class="pre">~typing.List[~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_memory:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/memory_manager.html#MemoryManager"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>记忆管理器，用于存储对话历史</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>memory</strong> (<cite>List[Dict[str, str]]</cite>) -- 记忆</p></li>
+<li><p><strong>max_memory</strong> (<cite>int</cite>) -- 最大记忆数</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager.add_message">
+<span class="sig-name descname"><span class="pre">add_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/memory_manager.html#MemoryManager.add_message"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager.add_message" title="Link to this definition"></a></dt>
+<dd><p>添加一条消息到记忆，超过最大记忆数则删除最早的消息</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) -- 消息</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/memory_manager.html#MemoryManager.clear"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager.clear" title="Link to this definition"></a></dt>
+<dd><p>清空记忆</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager.get_memory">
+<span class="sig-name descname"><span class="pre">get_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mymanus/agent/memory_manager.html#MemoryManager.get_memory"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager.get_memory" title="Link to this definition"></a></dt>
+<dd><p>获取记忆</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager.max_memory">
+<span class="sig-name descname"><span class="pre">max_memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager.max_memory" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager.memory">
+<span class="sig-name descname"><span class="pre">memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager.memory" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.memory_manager.MemoryManager.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mymanus.agent.memory_manager.MemoryManager.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mymanus.agent.tool_manager">
+<span id="mymanus-agent-tool-manager-module"></span><h2>mymanus.agent.tool_manager module<a class="headerlink" href="#module-mymanus.agent.tool_manager" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.tool_manager.</span></span><span class="sig-name descname"><span class="pre">BaseTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#BaseTool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>基础工具类，所有的类都要继承这个类</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool</strong> (<cite>Any</cite>) -- 工具，形式不限</p></li>
+<li><p><strong>tool_name</strong> (<cite>str</cite>, <em>optional</em>) -- 工具名称</p></li>
+<li><p><strong>tool_description</strong> (<cite>Optional[str]</cite>, <em>optional</em>) -- 工具描述</p></li>
+<li><p><strong>tool_schema</strong> (<cite>Dict[str, Any]</cite>, <em>optional</em>) -- 工具schema</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.execute">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#BaseTool.execute"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.execute" title="Link to this definition"></a></dt>
+<dd><p>执行工具</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.initialize_tool_info">
+<span class="sig-name descname"><span class="pre">initialize_tool_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mymanus.agent.tool_manager.BaseTool" title="mymanus.agent.tool_manager.BaseTool"><span class="pre">BaseTool</span></a></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#BaseTool.initialize_tool_info"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.initialize_tool_info" title="Link to this definition"></a></dt>
+<dd><p>有一些参数是None，通过model_validator机制把默认信息填进去，初始化工具相关的属性</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.tool">
+<span class="sig-name descname"><span class="pre">tool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.tool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.tool_description">
+<span class="sig-name descname"><span class="pre">tool_description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.tool_description" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.tool_name">
+<span class="sig-name descname"><span class="pre">tool_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.tool_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.BaseTool.tool_schema">
+<span class="sig-name descname"><span class="pre">tool_schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mymanus.agent.tool_manager.BaseTool.tool_schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.FunctionTool">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.tool_manager.</span></span><span class="sig-name descname"><span class="pre">FunctionTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#FunctionTool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.FunctionTool" title="Link to this definition"></a></dt>
+<dd><p>基类：<a class="reference internal" href="#mymanus.agent.tool_manager.BaseTool" title="mymanus.agent.tool_manager.BaseTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTool</span></code></a></p>
+<p>由python函数构成的工具描述类别</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool</strong> (<cite>Callable</cite>) -- 工具函数(相比父类明确Callable类型)</p></li>
+<li><p><strong>tool_name</strong> (<cite>str</cite>, <em>optional</em>) -- 工具名称，默认是函数名（继承自BaseTool）</p></li>
+<li><p><strong>tool_description</strong> (<cite>Optional[str]</cite>, <em>optional</em>) -- 工具描述，默认是函数文档的第一行（继承自BaseTool）</p></li>
+<li><p><strong>tool_schema</strong> (<cite>Dict[str, Any]</cite>, <em>optional</em>) -- 工具schema（继承自BaseTool）</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.FunctionTool.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#FunctionTool.execute"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.FunctionTool.execute" title="Link to this definition"></a></dt>
+<dd><p>执行工具</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.FunctionTool.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mymanus.agent.tool_manager.FunctionTool.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.FunctionTool.tool">
+<span class="sig-name descname"><span class="pre">tool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#mymanus.agent.tool_manager.FunctionTool.tool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.ToolManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.tool_manager.</span></span><span class="sig-name descname"><span class="pre">ToolManager</span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#ToolManager"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.ToolManager" title="Link to this definition"></a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>工具管理类，管理所有的工具，期望具备的功能：
+1. 工具注册：让工具管理器感知到，包括生成对应的schema保存起来
+2. 工具执行：执行工具，并返回结果
+3. 工具删除：删除工具
+4. 工具列表：获取所有工具列表</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.ToolManager.delete_tool">
+<span class="sig-name descname"><span class="pre">delete_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#ToolManager.delete_tool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.ToolManager.delete_tool" title="Link to this definition"></a></dt>
+<dd><p>删除工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool_name</strong> (<cite>str</cite>) -- 工具名称</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>是否删除成功</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.ToolManager.execute_tool">
+<span class="sig-name descname"><span class="pre">execute_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#ToolManager.execute_tool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.ToolManager.execute_tool" title="Link to this definition"></a></dt>
+<dd><p>执行工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<cite>str</cite>) -- 工具名称</p></li>
+<li><p><strong>**kwargs</strong> -- 工具入参</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>工具返回结果</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.ToolManager.get_tool_list">
+<span class="sig-name descname"><span class="pre">get_tool_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mymanus.agent.tool_manager.FunctionTool" title="mymanus.agent.tool_manager.FunctionTool"><span class="pre">FunctionTool</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#ToolManager.get_tool_list"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.ToolManager.get_tool_list" title="Link to this definition"></a></dt>
+<dd><p>获取所有工具，并返回列表</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>工具列表</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>List[FunctionTool]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.ToolManager.get_tool_schema_list">
+<span class="sig-name descname"><span class="pre">get_tool_schema_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#ToolManager.get_tool_schema_list"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.ToolManager.get_tool_schema_list" title="Link to this definition"></a></dt>
+<dd><p>获取所有工具的schema</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>工具schema列表</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>List[Dict]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.ToolManager.register_tool">
+<span class="sig-name descname"><span class="pre">register_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#ToolManager.register_tool"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.ToolManager.register_tool" title="Link to this definition"></a></dt>
+<dd><p>注册工具</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool</strong> (<em>Any</em>) -- 工具，形式不限</p></li>
+<li><p><strong>tool_name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) -- 工具名称，默认是函数名</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mymanus.agent.tool_manager.get_current_weather">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mymanus.agent.tool_manager.</span></span><span class="sig-name descname"><span class="pre">get_current_weather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'celsius'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'a'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'b'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'c'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'a'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1,</span> <span class="pre">2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{'a':</span> <span class="pre">1,</span> <span class="pre">'b':</span> <span class="pre">2}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">2,</span> <span class="pre">3]]]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/mymanus/agent/tool_manager.html#get_current_weather"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#mymanus.agent.tool_manager.get_current_weather" title="Link to this definition"></a></dt>
+<dd><p>获取当前天气</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>location</strong> (<em>str</em>) -- 城市名称</p></li>
+<li><p><strong>units</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) -- 温度单位，可选值为&quot;celsius&quot;或&quot;fahrenheit&quot;，默认值为&quot;celsius&quot;</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>天气信息</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mymanus.agent">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mymanus.agent" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="mymanus.html" class="btn btn-neutral float-left" title="mymanus package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="mymanus.logger.html" class="btn btn-neutral float-right" title="mymanus.logger package" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Tong Tong。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mymanus.agent.agent &mdash; LLM-TT v0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d7bb714b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LLM-TT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LLM-TT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">mymanus.agent.agent</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>mymanus.agent.agent 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.memory_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tool_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">LLM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..prompt</span><span class="w"> </span><span class="kn">import</span> <span class="n">NEXT_STEP_PROMPT</span><span class="p">,</span> <span class="n">FINAL_STEP_PROMPT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+
+<div class="viewcode-block" id="BaseAgent">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.BaseAgent">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseAgent</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;智能体基类</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        llm (LLM): 大模型实例</span>
+<span class="sd">        tool_manager (ToolManager): 工具管理器</span>
+<span class="sd">        memory_manager (MemoryManager): 记忆管理器</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">llm</span><span class="p">:</span> <span class="n">LLM</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;大模型实例&quot;</span><span class="p">)</span>
+    <span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;工具管理器&quot;</span><span class="p">)</span>
+    <span class="n">memory_manager</span><span class="p">:</span> <span class="n">MemoryManager</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;记忆管理器&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseAgent.Config">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.BaseAgent.Config">[文档]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+        <span class="c1"># 为什么要加这个配置？</span>
+        <span class="c1"># 因为LLM、ToolManager、MemoryManager都不是pydantic能自动校验的类型，讲白了不是python自带的而是你自己定义的类，所以要加这个配置，否则报错！</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="BaseAgent.run">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.BaseAgent.run">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;运行智能体</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (List[Dict]): 用户的一句话query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;子类必须实现run方法&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ToolCallingAgent">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolCallingAgent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ToolCallingAgent，由工具、记忆、规划、感知等模块构建，咱们一个一个来实现</span>
+
+<span class="sd">    ToolCallingAgent特点：</span>
+<span class="sd">        - 一个最简单的智能体</span>
+<span class="sd">        - 智能体规划由一个简单大模型实现</span>
+<span class="sd">        - 只包含工具模块和记忆模块</span>
+<span class="sd">        - 具备React框架，先think，再act</span>
+<span class="sd">        - 支持基本的对话功能</span>
+<span class="sd">        - 支持工具调用</span>
+<span class="sd">        - 后续的智能体可以继承这个基座智能体，并在此基础上添加更多的功能</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        llm (LLM): 大模型实例，在这里主要用于任务规划（继承自BaseAgent）</span>
+<span class="sd">        tool_manager (ToolManager): 工具管理器（继承自BaseAgent）</span>
+<span class="sd">        memory_manager (MemoryManager): 记忆管理器（继承自BaseAgent）</span>
+<span class="sd">        max_step (int): 最大步骤，默认10</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;最大步骤&quot;</span><span class="p">)</span>
+    <span class="n">next_step_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">NEXT_STEP_PROMPT</span><span class="p">,</span>
+                                  <span class="n">description</span><span class="o">=</span><span class="s2">&quot;下一步提示&quot;</span><span class="p">)</span>
+    <span class="n">final_step_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">FINAL_STEP_PROMPT</span><span class="p">,</span>
+                                   <span class="n">description</span><span class="o">=</span><span class="s2">&quot;最后一步提示&quot;</span><span class="p">)</span>
+
+    <span class="c1"># React框架，先think（reasoning），再act</span>
+<div class="viewcode-block" id="ToolCallingAgent.think">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent.think">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">think</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用大模型进行思考，返回是否需要使用工具</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            message (List[Dict]): 消息列表</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: 是否需要使用工具</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 添加终止提示</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_step_prompt</span><span class="p">})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">get_tool_schema_list</span><span class="p">())</span>
+
+        <span class="c1"># 回复内容全部加入记忆模块，加入的得是字典</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+        <span class="c1"># 打印回复内容，流式输出会自动打印，不必要重复打印</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">stream</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体回复：</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 判断是否需要使用工具</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ToolCallingAgent.act">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent.act">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;调用对应工具返回结果，并将返回结构通过assistant message返回，需要注意，一旦调用工具还需要反馈assistant message，要把函数运行结果返回给大模型做下一步的计划</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            message (List[Dict]): 消息列表</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: 是否执行完所有的工具</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># 根据记忆读取最新的回复，根据tool_calls顺序执行工具，返回的可能不止一个工具</span>
+        <span class="k">for</span> <span class="n">tool_call</span> <span class="ow">in</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;tool_calls&quot;</span><span class="p">]:</span>
+
+            <span class="c1"># 拿到调用工具的名称、入参、id、index</span>
+            <span class="n">tool_name</span> <span class="o">=</span> <span class="n">tool_call</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">tool_arguments</span> <span class="o">=</span> <span class="n">tool_call</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;arguments&quot;</span><span class="p">]</span>
+            <span class="n">tool_id</span> <span class="o">=</span> <span class="n">tool_call</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+            <span class="c1"># 执行工具</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;调用工具：</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">，入参：</span><span class="si">{</span><span class="n">tool_arguments</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># 如果tool_arguments为空字典，则不传入参数</span>
+                <span class="k">if</span> <span class="n">tool_arguments</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">:</span>
+                    <span class="n">tool_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_tool</span><span class="p">(</span>
+                        <span class="n">tool_name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># 将tool_arguments转换为字典</span>
+                    <span class="n">tool_arguments</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">tool_arguments</span><span class="p">)</span>
+                    <span class="n">tool_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_tool</span><span class="p">(</span>
+                        <span class="n">tool_name</span><span class="p">,</span> <span class="o">**</span><span class="n">tool_arguments</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工具</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">执行成功&quot;</span><span class="p">)</span>
+
+                <span class="c1"># 然后是一个tool message</span>
+                <span class="n">tool_message</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;tool&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">tool_result</span><span class="p">,</span>
+                    <span class="s2">&quot;tool_call_id&quot;</span><span class="p">:</span> <span class="n">tool_id</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">tool_message</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">tool_call</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;terminate&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体认为任务完成，终止工具调用&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工具</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">执行失败，错误信息：</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># 将错误信息告知大模型</span>
+                <span class="n">assistant_message</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;工具</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">执行失败，考虑调用其他工具&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;refusal&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;audio&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;function_call&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;tool_calls&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">assistant_message</span><span class="p">)</span>
+        <span class="c1"># 返回结果</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ToolCallingAgent.run_step">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent.run_step">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;运行一个react步骤，包括一次think和一次act</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            message (List[Dict]): 消息列表</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: 是否是最后一步，达到终止条件</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># 思考</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体正在思考……&quot;</span><span class="p">)</span>
+        <span class="n">should_act</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">think</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">should_act</span><span class="p">:</span>
+            <span class="c1"># 行动</span>
+            <span class="c1"># 获取最新的message</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体正在行动……&quot;</span><span class="p">)</span>
+            <span class="n">current_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">get_memory</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">should_terminate</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">current_message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">should_terminate</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ToolCallingAgent.run">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent.run">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;运行完整轮数的react过程</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (List[Dict]): 用户的一句话query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># 用户问题本身也要加到记忆里面</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_step</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;正在执行第</span><span class="si">{</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">步……&quot;</span><span class="p">)</span>
+            <span class="c1"># 输入全量的message</span>
+            <span class="n">final_step</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">get_memory</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">final_step</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># 最后一步要综合除了最后一轮信息给用户一个总结性的回复，还需要和大模型做一次对话</span>
+        <span class="k">if</span> <span class="n">final_step</span><span class="p">:</span>
+
+            <span class="n">final_message</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_step_prompt</span><span class="p">}</span>
+            <span class="c1"># 注意在调用terminate工具的同时还可能有输出，得把terminate当成一个普通工具对待</span>
+            <span class="c1"># 把final_message加入到memory当中</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">final_message</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体正在总结答案……&quot;</span><span class="p">)</span>
+            <span class="c1"># 这里有一个特别坑的地方，就是tools必须全程保持一致，否则大模型自动进入新的问答，无法结合上下文信息分析了</span>
+            <span class="n">final_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+                <span class="n">messages</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">get_memory</span><span class="p">(),</span>
+                <span class="n">tool_choice</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="n">tools</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">get_tool_schema_list</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">final_response</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+            <span class="c1"># 空一行</span>
+            <span class="nb">print</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体总结答案完成~&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_step</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体执行已达最大步数</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;童发发的Manus超级助手已帮你解决当前问题，有其他问题还可问我哦~&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;智能体执行完成，记忆清空~&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_manager</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+    <span class="c1"># 智能体支持对工具采用装饰器的形式变为注册工具</span>
+<div class="viewcode-block" id="ToolCallingAgent.tool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent.tool">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;类似MCP协议，用装饰器直接注册工具</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            func (Callable): 要注册的工具函数</span>
+<span class="sd">            tool_name (Optional[str]): 工具名称，如果为None，则使用函数名作为工具名称</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+
+        <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="ToolCallingAgent.add_tool">
+<a class="viewcode-back" href="../../../mymanus.agent.html#mymanus.agent.agent.ToolCallingAgent.add_tool">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">register_tool</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Tong Tong。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
