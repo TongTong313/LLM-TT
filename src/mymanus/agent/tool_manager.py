@@ -11,15 +11,16 @@ class BaseTool(BaseModel, ABC):
     """基础工具类，所有的类都要继承这个类
     
     Args:
-        tool (`Any`): 工具，形式不限
-        tool_name (`str`, *optional*): 工具名称
-        tool_description (`Optional[str]`, *optional*): 工具描述
-        tool_schema (`Dict[str, Any]`, *optional*): 工具schema
+        tool (Any): 工具，形式不限
+        tool_name (str, optional): 工具名称，默认输入为None，会自动获取工具名称
+        tool_description (str, optional): 工具描述，默认输入为None，会自动获取工具描述
+        tool_schema (Dict[str, Any], optional): 工具schema，默认输入为None，会自动获取工具schema
     """
     tool: Any = Field(..., description="工具")
-    tool_name: str = Field(default=None, description="工具名称")
+    tool_name: Optional[str] = Field(default=None, description="工具名称")
     tool_description: Optional[str] = Field(default=None, description="工具描述")
-    tool_schema: Dict[str, Any] = Field(default=None, description="工具schema")
+    tool_schema: Optional[Dict[str, Any]] = Field(default=None,
+                                                  description="工具schema")
 
     @model_validator(mode="after")
     def initialize_tool_info(self) -> "BaseTool":
@@ -53,10 +54,7 @@ class FunctionTool(BaseTool):
     """由python函数构成的工具描述类别
     
     Args:
-        tool (`Callable`): 工具函数(相比父类明确Callable类型)
-        tool_name (`str`, *optional*): 工具名称，默认是函数名（继承自BaseTool）
-        tool_description (`Optional[str]`, *optional*): 工具描述，默认是函数文档的第一行（继承自BaseTool）
-        tool_schema (`Dict[str, Any]`, *optional*): 工具schema（继承自BaseTool）
+        tool (Callable): 工具函数(相比父类明确Callable类型)
     """
     # 函数工具，就要求是Callable类型
     tool: Callable = Field(..., description="工具函数")
@@ -99,10 +97,10 @@ class FunctionTool(BaseTool):
         这个函数能用，但绝对没有涵盖所有情况^_^
         
         Args:
-            type_hint (`Type`): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类
+            type_hint (Type): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类
 
         Returns:
-            `Dict[str, Any]`: 参数类型 schema
+            参数类型schema
         """
         # 首先必须要搞清楚get_origin函数和get_args函数的作用
         # get_origin函数：获取给予typing类的类型提示的python原始类型（如list、dict、tuple等），但如果类型提示是python内置类型或者其他玩意，则返回None。此外，无论这个类型被嵌套了多少层，get_origin函数都仅返回最外层的类型，如List[List[List[int]]]，get_origin函数仅返回list
@@ -181,7 +179,7 @@ class FunctionTool(BaseTool):
         """tool都是以函数代码的形式存在，但大模型并不能直接认识"代码"，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
        
         Returns:
-            `Dict`: 工具schema
+            工具schema
 
         openai接口的工具schema样式（字典）,背诵并默写：
         {
@@ -264,7 +262,7 @@ class FunctionTool(BaseTool):
             param_name (str): 参数名称
 
         Returns:
-            str: 参数描述
+           参数描述
         """
         if not func.__doc__:
             return ""
@@ -344,15 +342,15 @@ class ToolManager:
         self.tools[tool_name] = tool
 
     # 工具执行：执行工具，并返回结果
-    def execute_tool(self, tool_name: str, **kwargs):
+    def execute_tool(self, tool_name: str, **kwargs) -> Any:
         """执行工具
 
         Args:
-            tool_name (`str`): 工具名称
+            tool_name (str): 工具名称
             **kwargs: 工具入参
 
         Returns:
-            Any: 工具返回结果
+            工具返回结果
         """
         if tool_name not in self.tools:
             raise ValueError(f"工具名称{tool_name}不存在")
@@ -364,10 +362,10 @@ class ToolManager:
         """删除工具
 
         Args:
-            tool_name (`str`): 工具名称
+            tool_name (str): 工具名称
         
         Returns:
-            bool: 是否删除成功
+            是否删除成功
         """
         if tool_name in self.tools:
             del self.tools[tool_name]
@@ -380,7 +378,7 @@ class ToolManager:
         """获取所有工具，并返回列表
 
         Returns:
-            `List[FunctionTool]`: 工具列表
+            工具列表
         """
         return list(self.tools.values())
 
@@ -389,7 +387,7 @@ class ToolManager:
         """获取所有工具的schema
 
         Returns:
-            `List[Dict]`: 工具schema列表
+            工具schema列表
         """
         return [tool.tool_schema for tool in self.tools.values()]
 
@@ -417,7 +415,7 @@ async def get_current_weather(
         units (Optional[str]): 温度单位，可选值为"celsius"或"fahrenheit"，默认值为"celsius"
 
     Returns:
-        str: 天气信息
+        天气信息
     """
     # 定义备选的天气条件列表
     weather_conditions = ["晴天", "多云", "雨天"]

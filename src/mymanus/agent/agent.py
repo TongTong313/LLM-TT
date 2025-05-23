@@ -60,7 +60,7 @@ class ToolCallingAgent(BaseAgent):
                                    description="最后一步提示")
 
     # React框架，先think（reasoning），再act
-    async def think(self, message: List[Dict]):
+    async def think(self, message: List[Dict]) -> bool:
         """使用大模型进行思考，返回是否需要使用工具
         
         Args:
@@ -85,7 +85,7 @@ class ToolCallingAgent(BaseAgent):
         else:
             return False
 
-    async def act(self, message: List[Dict]):
+    async def act(self, message: List[Dict]) -> bool:
         """调用对应工具返回结果，并将返回结构通过assistant message返回，需要注意，一旦调用工具还需要反馈assistant message，要把函数运行结果返回给大模型做下一步的计划
         
         Args:
@@ -144,7 +144,7 @@ class ToolCallingAgent(BaseAgent):
         # 返回结果
         return False
 
-    async def run_step(self, message: List[Dict]):
+    async def run_step(self, message: List[Dict]) -> bool:
         """运行一个react步骤，包括一次think和一次act
         
         Args:
@@ -170,7 +170,7 @@ class ToolCallingAgent(BaseAgent):
         else:
             return False
 
-    async def run(self, message: List[Dict]):
+    async def run(self, message: List[Dict]) -> None:
         """运行完整轮数的react过程
 
         Args:
@@ -215,7 +215,9 @@ class ToolCallingAgent(BaseAgent):
         self.memory_manager.clear()
 
     # 智能体支持对工具采用装饰器的形式变为注册工具
-    def tool(self, func: Callable, tool_name: Optional[str] = None):
+    def tool(self,
+             func: Callable,
+             tool_name: Optional[str] = None) -> Callable:
         """类似MCP协议，用装饰器直接注册工具
         
         Args:
@@ -229,5 +231,7 @@ class ToolCallingAgent(BaseAgent):
 
         return decorator
 
-    def add_tool(self, func: Callable, tool_name: Optional[str] = None):
+    def add_tool(self,
+                 func: Callable,
+                 tool_name: Optional[str] = None) -> None:
         self.tool_manager.register_tool(func, tool_name)
