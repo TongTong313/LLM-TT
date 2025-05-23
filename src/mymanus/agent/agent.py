@@ -144,7 +144,7 @@ class ToolCallingAgent(BaseAgent):
         # 返回结果
         return False
 
-    async def run_step(self, message: List[Dict]) -> bool:
+    async def run_step(self, message: List[Dict]):
         """运行一个react步骤，包括一次think和一次act
         
         Args:
@@ -170,7 +170,7 @@ class ToolCallingAgent(BaseAgent):
         else:
             return False
 
-    async def run(self, message: List[Dict]) -> None:
+    async def run(self, message: List[Dict]):
         """运行完整轮数的react过程
 
         Args:
@@ -215,9 +215,7 @@ class ToolCallingAgent(BaseAgent):
         self.memory_manager.clear()
 
     # 智能体支持对工具采用装饰器的形式变为注册工具
-    def tool(self,
-             func: Callable,
-             tool_name: Optional[str] = None) -> Callable:
+    def tool(self, func: Callable, tool_name: Optional[str] = None):
         """类似MCP协议，用装饰器直接注册工具
         
         Args:

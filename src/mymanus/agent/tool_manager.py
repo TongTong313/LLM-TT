@@ -316,6 +316,10 @@ class ToolManager:
     2. 工具执行：执行工具，并返回结果
     3. 工具删除：删除工具
     4. 工具列表：获取所有工具列表
+    
+    Args:
+        tools (Dict[str, BaseTool]): 工具字典，key是工具名称，value是工具实例
+    
     """
 
     # 初始化类
