@@ -467,28 +467,23 @@
         <p>查询当前时间的工具。返回结果示例：“当前时间：2024-04-15 17:15:18。“</p>
 
 
-<table>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
       <thead>
         <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td>
-                <code>str</code>
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
             </td>
-            <td class="doc-returns-details">
+            <td>
               <div class="doc-md-description">
                 <p>当前时间</p>
               </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
-                  </span>
-                </p>
             </td>
           </tr>
       </tbody>
@@ -497,7 +492,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src/mymanus/tool/general.py</code></summary>
+              <summary>Source code in <code>src\mymanus\tool\general.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-4" name="__codelineno-0-4"></a><a href="#__codelineno-0-4"><span class="linenos" data-linenos=" 4 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a><a href="#__codelineno-0-5"><span class="linenos" data-linenos=" 5 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;查询当前时间的工具。返回结果示例：“当前时间：2024-04-15 17:15:18。“</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a><a href="#__codelineno-0-6"><span class="linenos" data-linenos=" 6 "></span></a>
@@ -576,11 +571,14 @@
         <p>对任意个数的数字进行加法运算</p>
 
 
-<table>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
       <thead>
         <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
@@ -588,44 +586,39 @@
             <td>
                 <code>numbers</code>
             </td>
-            <td class="doc-param-details">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="float">float</span>]</code>
+            </td>
+            <td>
               <div class="doc-md-description">
                 <p>加数列表</p>
               </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="typing.List">List</span>[<span title="float">float</span>]</code>
-                  </span>
-              </p>
+            </td>
+            <td>
+                <em>required</em>
             </td>
           </tr>
       </tbody>
     </table>
 
 
-<table>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
       <thead>
         <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td>
-                <code>float</code>
+<td><code>float</code></td>            <td>
+                  <code><span title="float">float</span></code>
             </td>
-            <td class="doc-returns-details">
+            <td>
               <div class="doc-md-description">
                 <p>和</p>
               </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
             </td>
           </tr>
       </tbody>
@@ -634,7 +627,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src/mymanus/tool/math.py</code></summary>
+              <summary>Source code in <code>src\mymanus\tool\math.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-4" name="__codelineno-0-4"></a><a href="#__codelineno-0-4"><span class="linenos" data-linenos=" 4 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">numbers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a><a href="#__codelineno-0-5"><span class="linenos" data-linenos=" 5 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;对任意个数的数字进行加法运算</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a><a href="#__codelineno-0-6"><span class="linenos" data-linenos=" 6 "></span></a>
@@ -712,19 +705,19 @@
         <p>这是一个特殊的工具，这个工具的作用就是一旦调用，就意味着智能体已经解决了所有的问题，返回一个固定回答</p>
 
 
-<table>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
       <thead>
         <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td>
-                <code>str</code>
+<td><code>str</code></td>            <td>
             </td>
-            <td class="doc-returns-details">
+            <td>
               <div class="doc-md-description">
                 <p>固定回答</p>
               </div>
@@ -736,7 +729,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src/mymanus/tool/terminate.py</code></summary>
+              <summary>Source code in <code>src\mymanus\tool\terminate.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><a href="#__codelineno-0-1"><span class="linenos" data-linenos="1 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">terminate</span><span class="p">():</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><a href="#__codelineno-0-2"><span class="linenos" data-linenos="2 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;这是一个特殊的工具，这个工具的作用就是一旦调用，就意味着智能体已经解决了所有的问题，返回一个固定回答</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a><a href="#__codelineno-0-3"><span class="linenos" data-linenos="3 "></span></a>

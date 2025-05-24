@@ -100,7 +100,14 @@ class FunctionTool(BaseTool):
             type_hint (Type): 由get_type_hints函数获取的参数的【类型】，兼容python源生类型和typing类
 
         Returns:
-            参数类型schema
+            (Dict[str, Any]): 参数类型schema
+            例如：
+            {
+                "type": "array",
+                "items": {
+                    "type": "integer"
+                }
+            }
         """
         # 首先必须要搞清楚get_origin函数和get_args函数的作用
         # get_origin函数：获取给予typing类的类型提示的python原始类型（如list、dict、tuple等），但如果类型提示是python内置类型或者其他玩意，则返回None。此外，无论这个类型被嵌套了多少层，get_origin函数都仅返回最外层的类型，如List[List[List[int]]]，get_origin函数仅返回list
@@ -179,7 +186,7 @@ class FunctionTool(BaseTool):
         """tool都是以函数代码的形式存在，但大模型并不能直接认识"代码"，得把代码转成大模型能认识的格式（通常都是json格式字符串），也即tool（function） schema。
        
         Returns:
-            工具schema
+            (Dict[str, Any]): 工具schema
 
         openai接口的工具schema样式（字典）,背诵并默写：
         {
@@ -192,7 +199,7 @@ class FunctionTool(BaseTool):
                 "properties": {
                     "location": {
                         "type": "string",
-                        "description": "City and country e.g. Bogotá, Colombia"
+                        "description": "City and country e.g. Bogotá, Colombia",
                     },
                     "units": {
                         "type": "string",

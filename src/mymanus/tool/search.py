@@ -1,8 +1,8 @@
 from baidusearch.baidusearch import search
-import json
+from typing import Optional
 
 
-async def baidu_search(query: str, num_results: int = 10) -> str:
+async def baidu_search(query: str, num_results: Optional[int] = 10) -> str:
     """百度搜索工具
 
     Args:
