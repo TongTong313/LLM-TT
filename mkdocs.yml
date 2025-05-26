@@ -111,6 +111,7 @@ plugins:
             show_signature_annotations: true
             
   - include-markdown
+  - search
 
 nav:
   - Home: index.md

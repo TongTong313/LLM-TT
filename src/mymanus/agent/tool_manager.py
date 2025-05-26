@@ -361,7 +361,7 @@ class ToolManager:
             **kwargs: 工具入参
 
         Returns:
-            工具返回结果
+            (Any): 工具返回结果
         """
         if tool_name not in self.tools:
             raise ValueError(f"工具名称{tool_name}不存在")
@@ -376,7 +376,7 @@ class ToolManager:
             tool_name (str): 工具名称
         
         Returns:
-            是否删除成功
+            (bool): 是否删除成功
         """
         if tool_name in self.tools:
             del self.tools[tool_name]
@@ -389,7 +389,7 @@ class ToolManager:
         """获取所有工具，并返回列表
 
         Returns:
-            工具列表
+            (List[FunctionTool]): 工具列表
         """
         return list(self.tools.values())
 
@@ -398,7 +398,7 @@ class ToolManager:
         """获取所有工具的schema
 
         Returns:
-            工具schema列表
+            (List[Dict]): 工具schema列表
         """
         return [tool.tool_schema for tool in self.tools.values()]
 
@@ -416,7 +416,7 @@ async def get_current_weather(
             "a": 1,
             "b": 2
         },
-        g: Optional[Union[int, str]] = 1,
+        g: Optional[Union[int, str]] = None,
         h: Optional[Union[List[int], List[str]]] = [1, 2, 3],
         i: Union[List[List[List[int]]], int] = [[[1, 2, 3]]]) -> str:
     """获取当前天气

@@ -142,6 +142,53 @@
     
     
     
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
     
   </nav>
   
@@ -619,7 +666,7 @@
 
 
               <details class="quote">
-                <summary>Source code in <code>src\mymanus\agent\llm.py</code></summary>
+                <summary>Source code in <code>src/mymanus/agent/llm.py</code></summary>
                 <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><a href="#__codelineno-0-8"><span class="linenos" data-linenos="  8 "></span></a><span class="k">class</span><span class="w"> </span><span class="nc">LLM</span><span class="p">:</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a><a href="#__codelineno-0-9"><span class="linenos" data-linenos="  9 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;大模型类，可用于agent中作为大脑用来规划和执行任务，基于openai接口规范</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10"></a><a href="#__codelineno-0-10"><span class="linenos" data-linenos=" 10 "></span></a>
@@ -966,7 +1013,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\llm.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/llm.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-40" name="__codelineno-0-40"></a><a href="#__codelineno-0-40"><span class="linenos" data-linenos=" 40 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-41" name="__codelineno-0-41"></a><a href="#__codelineno-0-41"><span class="linenos" data-linenos=" 41 "></span></a>               <span class="n">messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
 <a id="__codelineno-0-42" name="__codelineno-0-42"></a><a href="#__codelineno-0-42"><span class="linenos" data-linenos=" 42 "></span></a>               <span class="n">tools</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1181,7 +1228,7 @@
 
 
               <details class="quote">
-                <summary>Source code in <code>src\mymanus\agent\memory_manager.py</code></summary>
+                <summary>Source code in <code>src/mymanus/agent/memory_manager.py</code></summary>
                 <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-6" name="__codelineno-0-6"></a><a href="#__codelineno-0-6"><span class="linenos" data-linenos=" 6 "></span></a><span class="k">class</span><span class="w"> </span><span class="nc">MemoryManager</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7"></a><a href="#__codelineno-0-7"><span class="linenos" data-linenos=" 7 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;记忆管理器，用于存储对话历史</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8"></a><a href="#__codelineno-0-8"><span class="linenos" data-linenos=" 8 "></span></a>
@@ -1280,7 +1327,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\memory_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/memory_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-17" name="__codelineno-0-17"></a><a href="#__codelineno-0-17"><span class="linenos" data-linenos="17 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">add_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a><a href="#__codelineno-0-18"><span class="linenos" data-linenos="18 "></span></a>                                                               <span class="nb">str</span><span class="p">]]]):</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a><a href="#__codelineno-0-19"><span class="linenos" data-linenos="19 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;添加一条消息到记忆，超过最大记忆数则删除最早的消息</span>
@@ -1320,7 +1367,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\memory_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/memory_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-37" name="__codelineno-0-37"></a><a href="#__codelineno-0-37"><span class="linenos" data-linenos="37 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38"></a><a href="#__codelineno-0-38"><span class="linenos" data-linenos="38 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;清空记忆&quot;&quot;&quot;</span>
 <a id="__codelineno-0-39" name="__codelineno-0-39"></a><a href="#__codelineno-0-39"><span class="linenos" data-linenos="39 "></span></a>    <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1348,7 +1395,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\memory_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/memory_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-33" name="__codelineno-0-33"></a><a href="#__codelineno-0-33"><span class="linenos" data-linenos="33 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <a id="__codelineno-0-34" name="__codelineno-0-34"></a><a href="#__codelineno-0-34"><span class="linenos" data-linenos="34 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;获取记忆&quot;&quot;&quot;</span>
 <a id="__codelineno-0-35" name="__codelineno-0-35"></a><a href="#__codelineno-0-35"><span class="linenos" data-linenos="35 "></span></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory</span>
@@ -1479,7 +1526,7 @@
 
 
               <details class="quote">
-                <summary>Source code in <code>src\mymanus\agent\agent.py</code></summary>
+                <summary>Source code in <code>src/mymanus/agent/agent.py</code></summary>
                 <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-38" name="__codelineno-0-38"></a><a href="#__codelineno-0-38"><span class="linenos" data-linenos=" 38 "></span></a><span class="k">class</span><span class="w"> </span><span class="nc">ToolCallingAgent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
 <a id="__codelineno-0-39" name="__codelineno-0-39"></a><a href="#__codelineno-0-39"><span class="linenos" data-linenos=" 39 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;ToolCallingAgent，由工具、记忆、规划、感知等模块构建，咱们一个一个来实现</span>
 <a id="__codelineno-0-40" name="__codelineno-0-40"></a><a href="#__codelineno-0-40"><span class="linenos" data-linenos=" 40 "></span></a>
@@ -1769,7 +1816,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\agent.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/agent.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-88" name="__codelineno-0-88"></a><a href="#__codelineno-0-88"><span class="linenos" data-linenos=" 88 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <a id="__codelineno-0-89" name="__codelineno-0-89"></a><a href="#__codelineno-0-89"><span class="linenos" data-linenos=" 89 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;调用对应工具返回结果，并将返回结构通过assistant message返回，需要注意，一旦调用工具还需要反馈assistant message，要把函数运行结果返回给大模型做下一步的计划</span>
 <a id="__codelineno-0-90" name="__codelineno-0-90"></a><a href="#__codelineno-0-90"><span class="linenos" data-linenos=" 90 "></span></a>
@@ -1887,7 +1934,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\agent.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/agent.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-173" name="__codelineno-0-173"></a><a href="#__codelineno-0-173"><span class="linenos" data-linenos="173 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
 <a id="__codelineno-0-174" name="__codelineno-0-174"></a><a href="#__codelineno-0-174"><span class="linenos" data-linenos="174 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;运行完整轮数的react过程</span>
 <a id="__codelineno-0-175" name="__codelineno-0-175"></a><a href="#__codelineno-0-175"><span class="linenos" data-linenos="175 "></span></a>
@@ -2012,7 +2059,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\agent.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/agent.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-147" name="__codelineno-0-147"></a><a href="#__codelineno-0-147"><span class="linenos" data-linenos="147 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
 <a id="__codelineno-0-148" name="__codelineno-0-148"></a><a href="#__codelineno-0-148"><span class="linenos" data-linenos="148 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;运行一个react步骤，包括一次think和一次act</span>
 <a id="__codelineno-0-149" name="__codelineno-0-149"></a><a href="#__codelineno-0-149"><span class="linenos" data-linenos="149 "></span></a>
@@ -2120,7 +2167,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\agent.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/agent.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-63" name="__codelineno-0-63"></a><a href="#__codelineno-0-63"><span class="linenos" data-linenos="63 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">think</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <a id="__codelineno-0-64" name="__codelineno-0-64"></a><a href="#__codelineno-0-64"><span class="linenos" data-linenos="64 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;使用大模型进行思考，返回是否需要使用工具</span>
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a><a href="#__codelineno-0-65"><span class="linenos" data-linenos="65 "></span></a>
@@ -2216,7 +2263,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\agent.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/agent.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-218" name="__codelineno-0-218"></a><a href="#__codelineno-0-218"><span class="linenos" data-linenos="218 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <a id="__codelineno-0-219" name="__codelineno-0-219"></a><a href="#__codelineno-0-219"><span class="linenos" data-linenos="219 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;类似MCP协议，用装饰器直接注册工具</span>
 <a id="__codelineno-0-220" name="__codelineno-0-220"></a><a href="#__codelineno-0-220"><span class="linenos" data-linenos="220 "></span></a>
@@ -2303,7 +2350,7 @@
 
 
               <details class="quote">
-                <summary>Source code in <code>src\mymanus\agent\tool_manager.py</code></summary>
+                <summary>Source code in <code>src/mymanus/agent/tool_manager.py</code></summary>
                 <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-320" name="__codelineno-0-320"></a><a href="#__codelineno-0-320"><span class="linenos" data-linenos="320 "></span></a><span class="k">class</span><span class="w"> </span><span class="nc">ToolManager</span><span class="p">:</span>
 <a id="__codelineno-0-321" name="__codelineno-0-321"></a><a href="#__codelineno-0-321"><span class="linenos" data-linenos="321 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;工具管理类，管理所有的工具，期望具备的功能：</span>
 <a id="__codelineno-0-322" name="__codelineno-0-322"></a><a href="#__codelineno-0-322"><span class="linenos" data-linenos="322 "></span></a><span class="sd">    1. 工具注册：让工具管理器感知到，包括生成对应的schema保存起来</span>
@@ -2348,7 +2395,7 @@
 <a id="__codelineno-0-361" name="__codelineno-0-361"></a><a href="#__codelineno-0-361"><span class="linenos" data-linenos="361 "></span></a><span class="sd">            **kwargs: 工具入参</span>
 <a id="__codelineno-0-362" name="__codelineno-0-362"></a><a href="#__codelineno-0-362"><span class="linenos" data-linenos="362 "></span></a>
 <a id="__codelineno-0-363" name="__codelineno-0-363"></a><a href="#__codelineno-0-363"><span class="linenos" data-linenos="363 "></span></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a><a href="#__codelineno-0-364"><span class="linenos" data-linenos="364 "></span></a><span class="sd">            工具返回结果</span>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a><a href="#__codelineno-0-364"><span class="linenos" data-linenos="364 "></span></a><span class="sd">            (Any): 工具返回结果</span>
 <a id="__codelineno-0-365" name="__codelineno-0-365"></a><a href="#__codelineno-0-365"><span class="linenos" data-linenos="365 "></span></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-366" name="__codelineno-0-366"></a><a href="#__codelineno-0-366"><span class="linenos" data-linenos="366 "></span></a>        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
 <a id="__codelineno-0-367" name="__codelineno-0-367"></a><a href="#__codelineno-0-367"><span class="linenos" data-linenos="367 "></span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工具名称</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">不存在&quot;</span><span class="p">)</span>
@@ -2363,7 +2410,7 @@
 <a id="__codelineno-0-376" name="__codelineno-0-376"></a><a href="#__codelineno-0-376"><span class="linenos" data-linenos="376 "></span></a><span class="sd">            tool_name (str): 工具名称</span>
 <a id="__codelineno-0-377" name="__codelineno-0-377"></a><a href="#__codelineno-0-377"><span class="linenos" data-linenos="377 "></span></a>
 <a id="__codelineno-0-378" name="__codelineno-0-378"></a><a href="#__codelineno-0-378"><span class="linenos" data-linenos="378 "></span></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a><a href="#__codelineno-0-379"><span class="linenos" data-linenos="379 "></span></a><span class="sd">            是否删除成功</span>
+<a id="__codelineno-0-379" name="__codelineno-0-379"></a><a href="#__codelineno-0-379"><span class="linenos" data-linenos="379 "></span></a><span class="sd">            (bool): 是否删除成功</span>
 <a id="__codelineno-0-380" name="__codelineno-0-380"></a><a href="#__codelineno-0-380"><span class="linenos" data-linenos="380 "></span></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-381" name="__codelineno-0-381"></a><a href="#__codelineno-0-381"><span class="linenos" data-linenos="381 "></span></a>        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
 <a id="__codelineno-0-382" name="__codelineno-0-382"></a><a href="#__codelineno-0-382"><span class="linenos" data-linenos="382 "></span></a>            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span>
@@ -2376,7 +2423,7 @@
 <a id="__codelineno-0-389" name="__codelineno-0-389"></a><a href="#__codelineno-0-389"><span class="linenos" data-linenos="389 "></span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;获取所有工具，并返回列表</span>
 <a id="__codelineno-0-390" name="__codelineno-0-390"></a><a href="#__codelineno-0-390"><span class="linenos" data-linenos="390 "></span></a>
 <a id="__codelineno-0-391" name="__codelineno-0-391"></a><a href="#__codelineno-0-391"><span class="linenos" data-linenos="391 "></span></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-392" name="__codelineno-0-392"></a><a href="#__codelineno-0-392"><span class="linenos" data-linenos="392 "></span></a><span class="sd">            工具列表</span>
+<a id="__codelineno-0-392" name="__codelineno-0-392"></a><a href="#__codelineno-0-392"><span class="linenos" data-linenos="392 "></span></a><span class="sd">            (List[FunctionTool]): 工具列表</span>
 <a id="__codelineno-0-393" name="__codelineno-0-393"></a><a href="#__codelineno-0-393"><span class="linenos" data-linenos="393 "></span></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-394" name="__codelineno-0-394"></a><a href="#__codelineno-0-394"><span class="linenos" data-linenos="394 "></span></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 <a id="__codelineno-0-395" name="__codelineno-0-395"></a><a href="#__codelineno-0-395"><span class="linenos" data-linenos="395 "></span></a>
@@ -2385,7 +2432,7 @@
 <a id="__codelineno-0-398" name="__codelineno-0-398"></a><a href="#__codelineno-0-398"><span class="linenos" data-linenos="398 "></span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;获取所有工具的schema</span>
 <a id="__codelineno-0-399" name="__codelineno-0-399"></a><a href="#__codelineno-0-399"><span class="linenos" data-linenos="399 "></span></a>
 <a id="__codelineno-0-400" name="__codelineno-0-400"></a><a href="#__codelineno-0-400"><span class="linenos" data-linenos="400 "></span></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-401" name="__codelineno-0-401"></a><a href="#__codelineno-0-401"><span class="linenos" data-linenos="401 "></span></a><span class="sd">            工具schema列表</span>
+<a id="__codelineno-0-401" name="__codelineno-0-401"></a><a href="#__codelineno-0-401"><span class="linenos" data-linenos="401 "></span></a><span class="sd">            (List[Dict]): 工具schema列表</span>
 <a id="__codelineno-0-402" name="__codelineno-0-402"></a><a href="#__codelineno-0-402"><span class="linenos" data-linenos="402 "></span></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-403" name="__codelineno-0-403"></a><a href="#__codelineno-0-403"><span class="linenos" data-linenos="403 "></span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">tool_schema</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 </code></pre></div>
@@ -2475,7 +2522,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\tool_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/tool_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-372" name="__codelineno-0-372"></a><a href="#__codelineno-0-372"><span class="linenos" data-linenos="372 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">delete_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <a id="__codelineno-0-373" name="__codelineno-0-373"></a><a href="#__codelineno-0-373"><span class="linenos" data-linenos="373 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;删除工具</span>
 <a id="__codelineno-0-374" name="__codelineno-0-374"></a><a href="#__codelineno-0-374"><span class="linenos" data-linenos="374 "></span></a>
@@ -2483,7 +2530,7 @@
 <a id="__codelineno-0-376" name="__codelineno-0-376"></a><a href="#__codelineno-0-376"><span class="linenos" data-linenos="376 "></span></a><span class="sd">        tool_name (str): 工具名称</span>
 <a id="__codelineno-0-377" name="__codelineno-0-377"></a><a href="#__codelineno-0-377"><span class="linenos" data-linenos="377 "></span></a>
 <a id="__codelineno-0-378" name="__codelineno-0-378"></a><a href="#__codelineno-0-378"><span class="linenos" data-linenos="378 "></span></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a><a href="#__codelineno-0-379"><span class="linenos" data-linenos="379 "></span></a><span class="sd">        是否删除成功</span>
+<a id="__codelineno-0-379" name="__codelineno-0-379"></a><a href="#__codelineno-0-379"><span class="linenos" data-linenos="379 "></span></a><span class="sd">        (bool): 是否删除成功</span>
 <a id="__codelineno-0-380" name="__codelineno-0-380"></a><a href="#__codelineno-0-380"><span class="linenos" data-linenos="380 "></span></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-381" name="__codelineno-0-381"></a><a href="#__codelineno-0-381"><span class="linenos" data-linenos="381 "></span></a>    <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
 <a id="__codelineno-0-382" name="__codelineno-0-382"></a><a href="#__codelineno-0-382"><span class="linenos" data-linenos="382 "></span></a>        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span>
@@ -2583,7 +2630,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\tool_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/tool_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-356" name="__codelineno-0-356"></a><a href="#__codelineno-0-356"><span class="linenos" data-linenos="356 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">execute_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <a id="__codelineno-0-357" name="__codelineno-0-357"></a><a href="#__codelineno-0-357"><span class="linenos" data-linenos="357 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;执行工具</span>
 <a id="__codelineno-0-358" name="__codelineno-0-358"></a><a href="#__codelineno-0-358"><span class="linenos" data-linenos="358 "></span></a>
@@ -2592,7 +2639,7 @@
 <a id="__codelineno-0-361" name="__codelineno-0-361"></a><a href="#__codelineno-0-361"><span class="linenos" data-linenos="361 "></span></a><span class="sd">        **kwargs: 工具入参</span>
 <a id="__codelineno-0-362" name="__codelineno-0-362"></a><a href="#__codelineno-0-362"><span class="linenos" data-linenos="362 "></span></a>
 <a id="__codelineno-0-363" name="__codelineno-0-363"></a><a href="#__codelineno-0-363"><span class="linenos" data-linenos="363 "></span></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a><a href="#__codelineno-0-364"><span class="linenos" data-linenos="364 "></span></a><span class="sd">        工具返回结果</span>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a><a href="#__codelineno-0-364"><span class="linenos" data-linenos="364 "></span></a><span class="sd">        (Any): 工具返回结果</span>
 <a id="__codelineno-0-365" name="__codelineno-0-365"></a><a href="#__codelineno-0-365"><span class="linenos" data-linenos="365 "></span></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-366" name="__codelineno-0-366"></a><a href="#__codelineno-0-366"><span class="linenos" data-linenos="366 "></span></a>    <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
 <a id="__codelineno-0-367" name="__codelineno-0-367"></a><a href="#__codelineno-0-367"><span class="linenos" data-linenos="367 "></span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工具名称</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">不存在&quot;</span><span class="p">)</span>
@@ -2645,12 +2692,12 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\tool_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/tool_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-388" name="__codelineno-0-388"></a><a href="#__codelineno-0-388"><span class="linenos" data-linenos="388 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_tool_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">]:</span>
 <a id="__codelineno-0-389" name="__codelineno-0-389"></a><a href="#__codelineno-0-389"><span class="linenos" data-linenos="389 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;获取所有工具，并返回列表</span>
 <a id="__codelineno-0-390" name="__codelineno-0-390"></a><a href="#__codelineno-0-390"><span class="linenos" data-linenos="390 "></span></a>
 <a id="__codelineno-0-391" name="__codelineno-0-391"></a><a href="#__codelineno-0-391"><span class="linenos" data-linenos="391 "></span></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-392" name="__codelineno-0-392"></a><a href="#__codelineno-0-392"><span class="linenos" data-linenos="392 "></span></a><span class="sd">        工具列表</span>
+<a id="__codelineno-0-392" name="__codelineno-0-392"></a><a href="#__codelineno-0-392"><span class="linenos" data-linenos="392 "></span></a><span class="sd">        (List[FunctionTool]): 工具列表</span>
 <a id="__codelineno-0-393" name="__codelineno-0-393"></a><a href="#__codelineno-0-393"><span class="linenos" data-linenos="393 "></span></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-394" name="__codelineno-0-394"></a><a href="#__codelineno-0-394"><span class="linenos" data-linenos="394 "></span></a>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 </code></pre></div>
@@ -2700,12 +2747,12 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\tool_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/tool_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-397" name="__codelineno-0-397"></a><a href="#__codelineno-0-397"><span class="linenos" data-linenos="397 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_tool_schema_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
 <a id="__codelineno-0-398" name="__codelineno-0-398"></a><a href="#__codelineno-0-398"><span class="linenos" data-linenos="398 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;获取所有工具的schema</span>
 <a id="__codelineno-0-399" name="__codelineno-0-399"></a><a href="#__codelineno-0-399"><span class="linenos" data-linenos="399 "></span></a>
 <a id="__codelineno-0-400" name="__codelineno-0-400"></a><a href="#__codelineno-0-400"><span class="linenos" data-linenos="400 "></span></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-401" name="__codelineno-0-401"></a><a href="#__codelineno-0-401"><span class="linenos" data-linenos="401 "></span></a><span class="sd">        工具schema列表</span>
+<a id="__codelineno-0-401" name="__codelineno-0-401"></a><a href="#__codelineno-0-401"><span class="linenos" data-linenos="401 "></span></a><span class="sd">        (List[Dict]): 工具schema列表</span>
 <a id="__codelineno-0-402" name="__codelineno-0-402"></a><a href="#__codelineno-0-402"><span class="linenos" data-linenos="402 "></span></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-403" name="__codelineno-0-403"></a><a href="#__codelineno-0-403"><span class="linenos" data-linenos="403 "></span></a>    <span class="k">return</span> <span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">tool_schema</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 </code></pre></div>
@@ -2779,7 +2826,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\agent\tool_manager.py</code></summary>
+              <summary>Source code in <code>src/mymanus/agent/tool_manager.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-337" name="__codelineno-0-337"></a><a href="#__codelineno-0-337"><span class="linenos" data-linenos="337 "></span></a><span class="k">def</span><span class="w"> </span><span class="nf">register_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <a id="__codelineno-0-338" name="__codelineno-0-338"></a><a href="#__codelineno-0-338"><span class="linenos" data-linenos="338 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;注册工具</span>
 <a id="__codelineno-0-339" name="__codelineno-0-339"></a><a href="#__codelineno-0-339"><span class="linenos" data-linenos="339 "></span></a>
@@ -2888,7 +2935,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\tool\math.py</code></summary>
+              <summary>Source code in <code>src/mymanus/tool/math.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-4" name="__codelineno-0-4"></a><a href="#__codelineno-0-4"><span class="linenos" data-linenos=" 4 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">numbers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a><a href="#__codelineno-0-5"><span class="linenos" data-linenos=" 5 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;对任意个数的数字进行加法运算</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a><a href="#__codelineno-0-6"><span class="linenos" data-linenos=" 6 "></span></a>
@@ -2999,7 +3046,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\tool\search.py</code></summary>
+              <summary>Source code in <code>src/mymanus/tool/search.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-5" name="__codelineno-0-5"></a><a href="#__codelineno-0-5"><span class="linenos" data-linenos=" 5 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">baidu_search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a><a href="#__codelineno-0-6"><span class="linenos" data-linenos=" 6 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;百度搜索工具</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7"></a><a href="#__codelineno-0-7"><span class="linenos" data-linenos=" 7 "></span></a>
@@ -3086,7 +3133,7 @@
           
 
             <details class="quote">
-              <summary>Source code in <code>src\mymanus\tool\general.py</code></summary>
+              <summary>Source code in <code>src/mymanus/tool/general.py</code></summary>
               <div class="language-python highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-4" name="__codelineno-0-4"></a><a href="#__codelineno-0-4"><span class="linenos" data-linenos=" 4 "></span></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a><a href="#__codelineno-0-5"><span class="linenos" data-linenos=" 5 "></span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;查询当前时间的工具。返回结果示例：“当前时间：2024-04-15 17:15:18。“</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a><a href="#__codelineno-0-6"><span class="linenos" data-linenos=" 6 "></span></a>
