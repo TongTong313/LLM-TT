@@ -9,18 +9,14 @@ from mymanus.tool.math import add
 
 class BaseTool(BaseModel, ABC):
     """基础工具类，所有的类都要继承这个类
-    
-    Args:
-        tool (Any): 工具，形式不限
-        tool_name (str, optional): 工具名称，默认输入为None，会自动获取工具名称
-        tool_description (str, optional): 工具描述，默认输入为None，会自动获取工具描述
-        tool_schema (Dict[str, Any], optional): 工具schema，默认输入为None，会自动获取工具schema
     """
     tool: Any = Field(..., description="工具")
-    tool_name: Optional[str] = Field(default=None, description="工具名称")
-    tool_description: Optional[str] = Field(default=None, description="工具描述")
-    tool_schema: Optional[Dict[str, Any]] = Field(default=None,
-                                                  description="工具schema")
+    tool_name: Optional[str] = Field(default=None,
+                                     description="工具名称，默认输入为None，会自动获取工具名称")
+    tool_description: Optional[str] = Field(
+        default=None, description="工具描述，默认输入为None，会自动获取工具描述   ")
+    tool_schema: Optional[Dict[str, Any]] = Field(
+        default=None, description="工具schema，默认输入为None，会自动获取工具schema")
 
     @model_validator(mode="after")
     def initialize_tool_info(self) -> "BaseTool":
@@ -52,12 +48,9 @@ class BaseTool(BaseModel, ABC):
 
 class FunctionTool(BaseTool):
     """由python函数构成的工具描述类别
-    
-    Args:
-        tool (Callable): 工具函数(相比父类明确Callable类型)
     """
     # 函数工具，就要求是Callable类型
-    tool: Callable = Field(..., description="工具函数")
+    tool: Callable = Field(..., description="函数工具，就要求是Callable类型")
 
     @override
     def _get_tool_name(self) -> str:
@@ -326,7 +319,6 @@ class ToolManager:
     
     Args:
         tools (Dict[str, BaseTool]): 工具字典，key是工具名称，value是工具实例
-    
     """
 
     # 初始化类

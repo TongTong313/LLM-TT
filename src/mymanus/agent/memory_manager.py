@@ -5,10 +5,6 @@ from pydantic import BaseModel, Field
 
 class MemoryManager(BaseModel):
     """记忆管理器，用于存储对话历史
-    
-    Args:
-        memory (`List[Dict[str, str]]`): 记忆
-        max_memory (`int`): 最大记忆数
     """
     memory: List[Dict[str, str]] = Field(default_factory=list,
                                          description="记忆")

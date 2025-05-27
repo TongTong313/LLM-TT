@@ -97,7 +97,6 @@ plugins:
         python:
           paths: [src]
           options:
-          options:
             docstring_style: google
             show_root_heading: true  # 这个很重要，确保显示根级标题
             show_root_toc_entry: true  # 确保在目录中显示
@@ -109,6 +108,9 @@ plugins:
             separate_signature: true
             modernize_annotations: true
             show_signature_annotations: true
+            extensions:
+            - griffe_pydantic:
+              schema: true
             
   - include-markdown
   - search

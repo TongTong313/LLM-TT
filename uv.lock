@@ -252,6 +252,18 @@ wheels = [
 ]
 
 [[package]]
+name = "griffe-pydantic"
+version = "1.1.4"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
+dependencies = [
+    { name = "griffe" },
+]
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/ad/88/f7b8558568eb11369383b4fdf91cf9f2ecf375e57193dd69673d553dc4d8/griffe_pydantic-1.1.4.tar.gz", hash = "sha256:3ce97cedb2c15b696e0c1c4bb901411f5b83b8e4d57b1fc0f2becde678ab4870" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/0b/a0/496e4f4f3af322171913b77f1789f479535abedf9f08359f1918219e03c8/griffe_pydantic-1.1.4-py3-none-any.whl", hash = "sha256:a4b9933579e14a8296cae90e71dace2742d91cb6792e5cd583047a6079f94e78" },
+]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
@@ -446,6 +458,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "baidusearch" },
+    { name = "griffe-pydantic" },
     { name = "ipykernel" },
     { name = "loguru" },
     { name = "mcp", extra = ["cli"] },
@@ -458,6 +471,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "baidusearch", specifier = ">=1.0.3" },
+    { name = "griffe-pydantic", specifier = ">=1.1.4" },
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.7.1" },

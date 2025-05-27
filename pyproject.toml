@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "baidusearch>=1.0.3",
+    "griffe-pydantic>=1.1.4",
     "ipykernel>=6.29.5",
     "loguru>=0.7.3",
     "mcp[cli]>=1.7.1",
