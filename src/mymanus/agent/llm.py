@@ -58,7 +58,7 @@ class LLM:
             enable_thinking (bool, optional): 是否启用大模型思考模式，仅在使用qwen3模型时有效，默认使用类初始化时的思考模式。
 
         Returns:
-            ChatCompletionMessage: openai格式的回复类
+            (ChatCompletionMessage): openai格式的回复类
         """
         try:
             # 构建请求参数，字典形式
