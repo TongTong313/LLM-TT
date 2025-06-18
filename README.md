@@ -18,6 +18,7 @@ License：MIT License，请严格遵守项目协议规范，否则保留追究�
 - src 源代码
   - mcp 测试MCP协议
   - mymanus 从零开始构建manus！
+  - langgraph 零门槛实战langgraph！
 - ref_code 参考代码
 - fc_test.py 测试大模型function calling
 - main.py 测试mymanus
@@ -62,6 +63,8 @@ source .venv/bin/activate
 ```
 
 ## 4. 更新日志
+- 2025.06.18
+  - 增加`langgraph`文件夹，新增`langgraph`零门槛实战项目
 - 2025.05.21
   - 部分类改用pydantic的BaseModel
   - python版本更新到3.13
