@@ -8,16 +8,14 @@ from openai.types.chat import ChatCompletionMessage
 import os
 import asyncio
 
-
-def add_messages(left: List[Any], right: Union[Any, List[Any]]) -> List[Any]:
-    if isinstance(right, list):
-        return left + right
-    return left + [right]
+# def add_messages(left: List[Any], right: Union[Any, List[Any]]) -> List[Any]:
+#     if isinstance(right, list):
+#         return left + right
+#     return left + [right]
 
 
 class State(TypedDict):
-    messages: Annotated[List[ChatCompletionMessage | Dict[str, str]],
-                        add_messages]
+    messages: List[Dict[str, Any]]
 
 
 class ChatNode:
@@ -132,14 +130,15 @@ class ChatNode:
                     collected_tool_calls.append(current_tool_call)
 
                 # 把字典转换为openai的ChatCompletionMessage对象
-                state["messages"] = [
-                    ChatCompletionMessage(
-                        role="assistant",
-                        content="".join(collected_content).strip()
-                        if collected_content else "",
-                        tool_calls=collected_tool_calls
-                        if collected_tool_calls else None)
-                ]
+                state["messages"].append({
+                    "role":
+                    "assistant",
+                    "content":
+                    "".join(collected_content).strip()
+                    if collected_content else "",
+                    "tool_calls":
+                    collected_tool_calls if collected_tool_calls else None
+                })
                 return state
 
         except Exception as e:
@@ -170,27 +169,35 @@ class MyAgent:
 
 async def stream_graph_updates(graph, user_input: str):
     user_message = {"role": "user", "content": user_input}
-    async for event in graph.astream({"messages": [user_message]}):
-        for value in event.values():
-            print("Assistant:", value["messages"][-1].content)
+    async for chunk in graph.astream({"messages": [user_message]},
+                                     stream_mode="updates"):
+        # if chunk.event != "messages":
+        #     print("跳过")
+        #     continue
+        print(chunk)
+        # message_chunk, metadata = chunk.data
+        # if message_chunk["content"]:
+        #     print(message_chunk["content"], end="|", flush=True)
+        # for value in event.values():
+        #     print("Assistant:", value["messages"][-1].content)
 
 
 async def main():
     graph = MyAgent().create_graph()
 
     while True:
-        try:
-            user_input = input("User: ")
-            if user_input.lower() in ["quit", "exit", "q"]:
-                print("Goodbye!")
-                break
-            await stream_graph_updates(graph, user_input)
-        except:
-            # fallback if input() is not available
-            user_input = "What do you know about LangGraph?"
-            print("User: " + user_input)
-            await stream_graph_updates(graph, user_input)
+        # try:
+        user_input = input("User: ")
+        if user_input.lower() in ["quit", "exit", "q"]:
+            print("Goodbye!")
             break
+        await stream_graph_updates(graph, user_input)
+        # except:
+        #     # fallback if input() is not available
+        #     user_input = "What do you know about LangGraph?"
+        #     print("User: " + user_input)
+        #     await stream_graph_updates(graph, user_input)
+        #     break
 
 
 if __name__ == "__main__":

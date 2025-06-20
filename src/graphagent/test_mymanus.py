@@ -39,7 +39,7 @@ class AgentConfig(TypedDict):
 
 class AgentNode:
 
-    def __init__(self, config: RunnableConfig):
+    def __init__(self, config: AgentConfig):
         llm = LLM(api_key=config.api_key,
                   base_url=config.base_url,
                   model=config.model,
@@ -60,7 +60,7 @@ class AgentNode:
         self.agent.add_tool(terminate, tool_name="terminate")
         self.agent.add_tool(add, tool_name="add")
 
-    async def __call__(self, state: State, config: RunnableConfig) -> State:
+    async def __call__(self, state: State) -> State:
         try:
             result = await self.agent.run(state["messages"])
             return {"messages": result}
@@ -73,7 +73,7 @@ class AgentNode:
 
 class MyAgent:
 
-    def __init__(self, config: RunnableConfig):
+    def __init__(self, config: AgentConfig):
         self.config = config
         self.agent = AgentNode(config)
         self.graph = StateGraph(State, config_schema=self.config)

@@ -2,7 +2,6 @@ from typing import Literal, Optional, List, Dict, Any
 from graphagent.message.openai import UserMessage, AssistantMessage, ToolMessage, SystemMessage, OpenAIMessage
 from graphagent.prompt.system_prompt import DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE
 from openai import AsyncOpenAI
-from typing import TypedDict
 from langchain_core.runnables.config import RunnableConfig
 
 
@@ -65,7 +64,8 @@ class PlanningNode:
         """
         # 这里是不需要考虑工具调用的，只用来做规划
         try:
-            messages = [SystemMessage(content=self.system_prompt), *messages]
+            system_message = {"role": "system", "content": self.system_prompt}
+            messages = [system_message] + messages
             # 暂时不加工具，推理过程暂时不支持
             request_params = {
                 "model":
