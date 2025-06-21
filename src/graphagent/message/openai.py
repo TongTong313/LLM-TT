@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Literal
 
 
 class OpenAIMessage(BaseModel):
@@ -11,41 +11,45 @@ class OpenAIMessage(BaseModel):
         tool_call_id: 工具调用ID，用于tool calling场景
         tool_calls: 工具调用，用于tool calling场景
     """
-    role: str
+    role: Literal['user', 'assistant', 'tool', 'system']
     content: str = ''
     tool_call_id: Optional[str] = None
     tool_calls: Optional[List[Dict[str, Any]]] = None
 
+    def to_dict(self):
+        return self.model_dump()
 
-class UserMessage(OpenAIMessage):
-    """用户消息，默认角色为user
-    """
-    role: str = 'user'
+    def to_json(self):
+        return self.model_dump_json()
 
+    @classmethod
+    def user_message(cls, content: str) -> "OpenAIMessage":
+        return cls(role='user', content=content)
 
-class AssistantMessage(OpenAIMessage):
-    """助手消息，默认角色为assistant
-    """
-    role: str = 'assistant'
+    @classmethod
+    def assistant_message(
+            cls,
+            content: str,
+            tool_call_id: Optional[str] = None,
+            tool_calls: Optional[List[Dict[str,
+                                           Any]]] = None) -> "OpenAIMessage":
+        return cls(role='assistant',
+                   content=content,
+                   tool_call_id=tool_call_id,
+                   tool_calls=tool_calls)
 
+    @classmethod
+    def tool_message(cls, content: str, tool_call_id: str) -> "OpenAIMessage":
+        return cls(role='tool', content=content, tool_call_id=tool_call_id)
 
-class ToolMessage(OpenAIMessage):
-    """工具消息，默认角色为tool
-    """
-    role: str = 'tool'
-    # 工具消息必须有tool_call_id
-    tool_call_id: str
-
-
-class SystemMessage(OpenAIMessage):
-    """系统消息，默认角色为system
-    """
-    role: str = 'system'
+    @classmethod
+    def system_message(cls, content: str) -> "OpenAIMessage":
+        return cls(role='system', content=content)
 
 
 if __name__ == '__main__':
     # 把pydantic转换为json格式
-    us = UserMessage(content="Hello, world!")
+    us = OpenAIMessage.user_message(content="Hello, world!")
     # 转换为Json格式
     print(us.model_dump_json())
 

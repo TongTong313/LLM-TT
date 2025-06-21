@@ -6,7 +6,7 @@ from graphagent.node.planning import PlanningNode
 import os
 from graphagent.prompt.system_prompt import DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE
 import asyncio
-from graphagent.message.openai import UserMessage
+from graphagent.message.openai import OpenAIMessage
 from langchain_core.runnables.config import RunnableConfig
 
 
@@ -64,13 +64,16 @@ if __name__ == "__main__":
     my_agent = MyAgent(config)
     graph = my_agent.create_graph()
 
+    messages = [
+        OpenAIMessage.user_message(content="你好，请帮我规划一个去北京旅游的行程").model_dump()
+    ]
+
     runnable_config = {'configurable': {'max_tokens': 1000}}
 
     async def main():
-        async for chunk in graph.astream(
-            {"messages": [UserMessage(content="你好，请帮我规划一个去北京旅游的行程")]},
-                stream_mode="updates",
-                config=runnable_config):
+        async for chunk in graph.astream({"messages": messages},
+                                         stream_mode="updates",
+                                         config=runnable_config):
             print(chunk)
 
     asyncio.run(main())
