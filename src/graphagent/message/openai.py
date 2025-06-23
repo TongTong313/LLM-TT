@@ -23,8 +23,8 @@ class OpenAIMessage(BaseModel):
         return self.model_dump_json()
 
     @classmethod
-    def user_message(cls, content: str) -> "OpenAIMessage":
-        return cls(role='user', content=content)
+    def user_message(cls, content: str) -> Dict[str, Any]:
+        return cls(role='user', content=content).to_dict()
 
     @classmethod
     def assistant_message(
@@ -32,19 +32,20 @@ class OpenAIMessage(BaseModel):
             content: str,
             tool_call_id: Optional[str] = None,
             tool_calls: Optional[List[Dict[str,
-                                           Any]]] = None) -> "OpenAIMessage":
+                                           Any]]] = None) -> Dict[str, Any]:
         return cls(role='assistant',
                    content=content,
                    tool_call_id=tool_call_id,
-                   tool_calls=tool_calls)
+                   tool_calls=tool_calls).to_dict()
 
     @classmethod
-    def tool_message(cls, content: str, tool_call_id: str) -> "OpenAIMessage":
-        return cls(role='tool', content=content, tool_call_id=tool_call_id)
+    def tool_message(cls, content: str, tool_call_id: str) -> Dict[str, Any]:
+        return cls(role='tool', content=content,
+                   tool_call_id=tool_call_id).to_dict()
 
     @classmethod
-    def system_message(cls, content: str) -> "OpenAIMessage":
-        return cls(role='system', content=content)
+    def system_message(cls, content: str) -> Dict[str, Any]:
+        return cls(role='system', content=content).to_dict()
 
 
 if __name__ == '__main__':
