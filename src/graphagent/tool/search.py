@@ -3,8 +3,7 @@ from typing import Optional
 
 
 async def baidu_search(query: str, num_results: Optional[int] = 10) -> str:
-    """百度搜索工具
-
+    """百度搜索工具，对任何问题只要必要都可以用搜索工具，保证答案尽可能正确
     Args:
         query (str): 搜索关键词
         num_results (int, optional): 搜索结果数量，默认10条.

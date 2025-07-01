@@ -11,6 +11,7 @@ import warnings
 import json
 from langchain_core.runnables import RunnableConfig
 from loguru import logger
+from graphagent.message.openai import OpenAIMessage
 
 
 class BaseTool(BaseModel, ABC):
@@ -325,6 +326,11 @@ class ToolNodeState(TypedDict):
 
 
 class ToolNodeConfig(BaseModel):
+    """静态配置，包含工具列表
+
+    Args:
+        tools (List[BaseTool]): 工具列表
+    """
     tools: List[BaseTool] = Field(..., description="工具列表")
 
 
@@ -332,29 +338,14 @@ class ToolNode(BaseNode):
     """工具调用节点，完成function calling的过程，目前只支持openai的function calling
     """
 
-    def __init__(self, config: ToolNodeConfig):
+    def __init__(self, *, tools: List[BaseTool | Dict[str, Any]], **kwargs):
         self.tools: Dict[str, BaseTool] = {}
-        for tool in config.tools:
-            self.register_tool(tool)
-
-    # 工具注册：让工具管理器感知到
-    def register_tool(self, tool: Any, tool_name: Optional[str] = None):
-        """注册工具
-
-        Args:
-            tool (Any): 工具，形式不限
-            tool_name (Optional[str]): 工具名称，默认是函数名
-        """
-        # 后面可能会增加工具是类的可能性，现在默认就是一个函数
-        # 生成工具的名称，没有名称给一个默认的名称
-        if tool_name is None:
-            tool_name = tool.__name__
-        elif tool_name in self.tools:
-            warnings.warn(f"工具名称{tool_name}已存在，将覆盖原有工具")
-
-        # 生成工具的实例
-        tool = FunctionTool(tool=tool, tool_name=tool_name)
-        self.tools[tool_name] = tool
+        if tools:
+            for tool in tools:
+                if isinstance(tool, dict):
+                    self.tools[tool["tool_name"]] = tool
+                else:
+                    self.tools[tool.tool_name] = tool
 
     # 工具执行：执行工具，并返回结果
     def execute_tool(self, tool_name: str, **kwargs) -> Any:
@@ -408,7 +399,14 @@ class ToolNode(BaseNode):
 
     async def run(self, *, state: ToolNodeState,
                   config: RunnableConfig) -> ToolNodeState:
-        """运行工具调用节点
+        """运行工具调用节点：解析路由节点返回的tool_calls，执行工具，并返回结果
+        
+        Args:
+            state (ToolNodeState): 工具节点状态
+            config (RunnableConfig): 运行时动态配置
+
+        Returns:
+            (ToolNodeState): 工具节点状态
         """
         # 取最新的消息
         message = state["messages"][-1]
@@ -434,25 +432,19 @@ class ToolNode(BaseNode):
                 logger.info(f"工具{tool_name}执行成功")
 
                 # 然后是一个tool message
-                tool_message = {
-                    "role": "tool",
-                    "content": tool_result,
-                    "tool_call_id": tool_id,
-                }
+                tool_message = OpenAIMessage.tool_message(content=tool_result,
+                                                          tool_call_id=tool_id)
                 state["messages"].append(tool_message)
 
-                if tool_call["function"]["name"] == "terminate":
-                    logger.warning(f"智能体认为任务完成，终止工具调用")
-                    return state
+                # if tool_call["function"]["name"] == "terminate":
+                #     logger.warning(f"智能体认为任务完成，终止工具调用")
+                #     return state
 
             except Exception as e:
                 logger.error(f"工具{tool_name}执行失败，错误信息：{e}")
                 # 将错误信息告知大模型
-                assistant_message = {
-                    "content": f"工具{tool_name}执行失败，考虑调用其他工具",
-                    "role": "assistant",
-                    "tool_calls": None,
-                }
+                assistant_message = OpenAIMessage.assistant_message(
+                    content=f"工具{tool_name}执行失败，考虑调用其他工具")
                 state["messages"].append(assistant_message)
         # 返回结果
         return state
