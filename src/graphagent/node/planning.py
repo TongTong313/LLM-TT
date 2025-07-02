@@ -118,7 +118,7 @@ class PlanningNode(BaseNode):
         # 初始化大模型client
         self.llm_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
-    async def run(self, *, state, config: RunnableConfig):
+    async def __call__(self, state, config: RunnableConfig):
         """
         调用大模型产生规划结果，支持流式和非流式
 
@@ -208,6 +208,3 @@ class PlanningNode(BaseNode):
 
         except Exception as e:
             raise Exception(f"调用大模型API失败: {str(e)}")
-
-    async def __call__(self, state, config: RunnableConfig):
-        return await self.run(state=state, config=config)

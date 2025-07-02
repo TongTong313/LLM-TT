@@ -54,9 +54,21 @@ class RouterNodeRunnableConfig(TypedDict):
 def router_function(state) -> str:
     """路由函数，根据状态决定路由到哪个节点
     """
-    if state["messages"][-1].tool_calls:
+    # 检查是否有工具调用
+    if state["messages"][-1].get("tool_calls"):
         return "tool"
-    return "end"
+
+    # 检查是否还有待执行的规划步骤
+    plan = state.get("plan", [])
+    for step in plan:
+        if step["status"] == "pending":
+            return "router"  # 还有待执行的步骤，继续路由
+
+    # 检查是否刚执行完工具，需要继续分析
+    if state["messages"][-1].get("role") == "tool":
+        return "router"  # 工具执行完成，继续路由分析
+
+    return "end"  # 所有步骤都完成了，结束
 
 
 class RouterNode(BaseNode):
@@ -68,7 +80,6 @@ class RouterNode(BaseNode):
                  api_key: str,
                  base_url: str,
                  tools: Optional[List[BaseTool | Callable]] = None,
-                 system_prompt: str = "",
                  stream: bool = False,
                  enable_thinking: Optional[bool] = None,
                  **kwargs):
@@ -77,7 +88,6 @@ class RouterNode(BaseNode):
 
         self.api_key = api_key
         self.base_url = base_url
-        self.system_prompt = system_prompt
         self.stream = stream
         self.enable_thinking = enable_thinking
         self.client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
@@ -100,7 +110,7 @@ class RouterNode(BaseNode):
         else:
             self.tool_schema = None
 
-    async def run(self, *, state, config: RunnableConfig):
+    async def __call__(self, state, config: RunnableConfig):
         """路由节点运行，根据PlanningNode的规划结果，给出工具调用方案
         """
         try:
@@ -116,8 +126,10 @@ class RouterNode(BaseNode):
 
             if plan_text:
                 system_message = {
-                    "role": "system",
-                    "content": self.system_prompt
+                    "role":
+                    "system",
+                    "content":
+                    config["configurable"].get("router_system_prompt", "")
                 }
                 user_message = {"role": "user", "content": plan_text}
                 state["messages"].append(system_message)
@@ -227,13 +239,8 @@ class RouterNode(BaseNode):
                     if collected_tool_calls else None)
 
                 state["messages"].append(assistant_message)
-                # 更新state中plan的该步骤状态为completed
-                state["plan"][plan.index(step)]["status"] = "completed"
 
                 return state
 
         except Exception as e:
             raise Exception(f"调用大模型API失败: {str(e)}")
-
-    async def __call__(self, state, config: RunnableConfig):
-        return await self.run(state=state, config=config)

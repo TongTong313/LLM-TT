@@ -11,7 +11,7 @@ from langchain_core.runnables.config import RunnableConfig
 from graphagent.tool import add, baidu_search, get_current_time
 from graphagent.node.tool import BaseTool
 from graphagent.node.router import RouterNodeState, RouterNodeConfig, RouterNodeRunnableConfig
-from graphagent.node.router import RouterNode
+from graphagent.node.router import RouterNode, router_function
 
 
 # 1. 预制节点配套预制状态(TypedDict)，用户可以直接使用，也支持自定义
@@ -50,8 +50,12 @@ class MyAgent:
             enable_thinking=config.enable_thinking,
             step_start_token=config.step_start_token,
             step_end_token=config.step_end_token)
-        self.tool_node = ToolNode(**config.model_dump())
-        self.router_node = RouterNode(**config.model_dump())
+        self.tool_node = ToolNode(tools=config.tools)
+        self.router_node = RouterNode(api_key=config.api_key,
+                                      base_url=config.base_url,
+                                      tools=config.tools,
+                                      stream=config.stream,
+                                      enable_thinking=config.enable_thinking)
 
     def create_graph(self) -> CompiledStateGraph:
         self.graph = StateGraph(State, config_schema=self.runnable_config)
@@ -60,8 +64,14 @@ class MyAgent:
         self.graph.add_node("router", self.router_node)
         self.graph.add_edge(START, "planning")
         self.graph.add_edge("planning", "router")
-        self.graph.add_edge("router", "tool")
-        self.graph.add_edge("tool", END)
+        # 使用条件边，让router根据状态决定下一步
+        self.graph.add_conditional_edges("router", router_function, {
+            "tool": "tool",
+            "router": "router",
+            "end": "end"
+        })
+        # tool节点执行完后回到router节点
+        self.graph.add_edge("tool", "router")
 
         return self.graph.compile()
 
@@ -96,7 +106,7 @@ if __name__ == "__main__":
             stream_mode="updates",
             config=runnable_config)
         async for event in events:
-            print(event)
+            # print(event)
             if "messages" in event:
                 pass
                 # print(event["planning_messages"][-1]["content"])

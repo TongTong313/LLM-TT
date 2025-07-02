@@ -339,13 +339,15 @@ class ToolNode(BaseNode):
     """
 
     def __init__(self, *, tools: List[BaseTool | Dict[str, Any]], **kwargs):
-        self.tools: Dict[str, BaseTool] = {}
+        # print(type(tools[0]))
+        self.tools: Dict[str, BaseTool | FunctionTool] = {}
         if tools:
             for tool in tools:
                 if isinstance(tool, dict):
                     self.tools[tool["tool_name"]] = tool
                 else:
                     self.tools[tool.tool_name] = tool
+        # print(self.tools)
 
     # 工具执行：执行工具，并返回结果
     def execute_tool(self, tool_name: str, **kwargs) -> Any:
@@ -397,8 +399,7 @@ class ToolNode(BaseNode):
         """
         return [tool.tool_schema for tool in self.tools.values()]
 
-    async def run(self, *, state: ToolNodeState,
-                  config: RunnableConfig) -> ToolNodeState:
+    async def __call__(self, state, config: RunnableConfig):
         """运行工具调用节点：解析路由节点返回的tool_calls，执行工具，并返回结果
         
         Args:
@@ -410,6 +411,20 @@ class ToolNode(BaseNode):
         """
         # 取最新的消息
         message = state["messages"][-1]
+        # 找到running的步骤
+        plan = state["plan"]
+        for step in plan:
+            if step["status"] == "running":
+                break
+
+        logger.info(f"正在执行步骤：{step['step']}")
+
+        # 如果它没有tool_calls，也认为它完成了
+        if not message.get("tool_calls"):
+            # 更新state中plan的该步骤状态为已完成
+            state["plan"][plan.index(step)]["status"] = "completed"
+            return state
+
         # 根据记忆读取最新的回复，根据tool_calls顺序执行工具，返回的可能不止一个工具
         for tool_call in message["tool_calls"]:
 
@@ -435,6 +450,8 @@ class ToolNode(BaseNode):
                 tool_message = OpenAIMessage.tool_message(content=tool_result,
                                                           tool_call_id=tool_id)
                 state["messages"].append(tool_message)
+                # 更新state中plan的该步骤状态为已完成
+                state["plan"][plan.index(step)]["status"] = "completed"
 
                 # if tool_call["function"]["name"] == "terminate":
                 #     logger.warning(f"智能体认为任务完成，终止工具调用")
@@ -448,9 +465,3 @@ class ToolNode(BaseNode):
                 state["messages"].append(assistant_message)
         # 返回结果
         return state
-
-    async def __call__(self, state: ToolNodeState,
-                       config: RunnableConfig) -> ToolNodeState:
-        """调用工具调用节点
-        """
-        return await self.run(state=state, config=config)
