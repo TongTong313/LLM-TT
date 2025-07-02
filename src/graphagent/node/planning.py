@@ -7,6 +7,19 @@ from graphagent.node.base import BaseNode
 from pydantic import BaseModel
 import os
 from graphagent.node.tool import FunctionTool, BaseTool
+from datetime import datetime
+
+
+class Step(BaseModel):
+    """
+    plan中的每步信息
+    """
+    id: int  # 步骤id
+    description: str  # 步骤描述
+    status: Literal["pending", "running", "completed", "failed", "skipped",
+                    "cancelled"] = "pending"  # 步骤状态
+    result: str = ""  # 步骤结果
+    error: str = ""  # 步骤错误信息
 
 
 class PlanningNodeState(TypedDict):
@@ -23,7 +36,7 @@ class PlanningNodeState(TypedDict):
     """
 
     messages: List[OpenAIMessage | Dict[str, Any]]
-    plan: List[Dict[str, Any]]
+    plan: List[Step]
 
 
 class PlanningNodeConfig(BaseModel):
@@ -195,12 +208,11 @@ class PlanningNode(BaseNode):
                 plan_list = []
                 for step in plan_text.split(self.step_start_token):
                     if step.strip():
-                        plan_list.append({
-                            "step":
-                            step.split(self.step_end_token)[0].strip(),
-                            "status":
-                            "pending"  # 默认未开始
-                        })
+                        step_id = len(plan_list)
+                        step_description = step.split(
+                            self.step_end_token)[0].strip()
+                        plan_list.append(
+                            Step(id=step_id, description=step_description))
 
                 state["plan"] = plan_list
 

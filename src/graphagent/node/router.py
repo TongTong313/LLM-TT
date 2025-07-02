@@ -61,7 +61,7 @@ def router_function(state) -> str:
     # 检查是否还有待执行的规划步骤
     plan = state.get("plan", [])
     for step in plan:
-        if step["status"] == "pending":
+        if step.status == "pending":
             return "router"  # 还有待执行的步骤，继续路由
 
     # 检查是否刚执行完工具，需要继续分析
@@ -118,10 +118,10 @@ class RouterNode(BaseNode):
             plan = state["plan"]
             for step in plan:
                 # 已提取可规划
-                if step["status"] == "pending":
-                    plan_text = step["step"]
+                if step.status == "pending":
+                    plan_text = step.description
                     # 更新state中plan的该步骤状态为running
-                    state["plan"][plan.index(step)]["status"] = "running"
+                    step.status = "running"
                     break
 
             if plan_text:

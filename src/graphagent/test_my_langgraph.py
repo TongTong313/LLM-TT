@@ -68,10 +68,11 @@ class MyAgent:
         self.graph.add_conditional_edges("router", router_function, {
             "tool": "tool",
             "router": "router",
-            "end": "end"
+            "end": END
         })
         # tool节点执行完后回到router节点
         self.graph.add_edge("tool", "router")
+        self.graph.add_edge("router", END)
 
         return self.graph.compile()
 
@@ -100,8 +101,10 @@ if __name__ == "__main__":
     async def main():
         events = graph.astream(
             {
-                "messages":
-                [OpenAIMessage.user_message(content="你好，请帮我生成一份扩散模型的综述报告")]
+                "messages": [
+                    OpenAIMessage.user_message(
+                        content="你好，请帮我生成一份AI领域扩散模型的综述报告")
+                ]
             },
             stream_mode="updates",
             config=runnable_config)
