@@ -6,6 +6,8 @@ from graphagent.node.base import BaseNode
 from graphagent.node.tool import BaseTool, FunctionTool
 import os
 from openai import AsyncOpenAI
+from graphagent.prompt.system_prompt import DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE
+from loguru import logger
 
 
 class RouterNodeState(TypedDict):
@@ -32,7 +34,6 @@ class RouterNodeConfig(BaseModel):
     tools: Optional[List[BaseTool | Callable]] = None
     stream: bool = False
     enable_thinking: Optional[bool] = None
-    system_prompt: str = ""
 
 
 class RouterNodeRunnableConfig(TypedDict):
@@ -58,17 +59,44 @@ def router_function(state) -> str:
     if state["messages"][-1].get("tool_calls"):
         return "tool"
 
-    # 检查是否还有待执行的规划步骤
     plan = state.get("plan", [])
+
+    # 如果没有计划，直接进入summary
+    if not plan:
+        return "summary"
+
+    # 检查plan的状态
+    has_pending = False
+    has_running = False
+    all_completed = True
+
     for step in plan:
         if step.status == "pending":
-            return "router"  # 还有待执行的步骤，继续路由
+            has_pending = True
+            all_completed = False
+        elif step.status == "running":
+            has_running = True
+            all_completed = False
+        # 如果status是completed, failed, skipped, cancelled，继续检查下一个
 
-    # 检查是否刚执行完工具，需要继续分析
+    # 如果有pending的步骤，继续router
+    if has_pending:
+        return "router"
+
+    # 如果有running的步骤，继续router
+    if has_running:
+        return "router"
+
+    # 如果所有步骤都完成了，进入summary节点
+    if all_completed:
+        return "summary"
+
+    # 工具执行完成后，继续路由分析
     if state["messages"][-1].get("role") == "tool":
-        return "router"  # 工具执行完成，继续路由分析
+        return "router"
 
-    return "end"  # 所有步骤都完成了，结束
+    # 默认情况，继续router
+    return "router"
 
 
 class RouterNode(BaseNode):
@@ -114,28 +142,34 @@ class RouterNode(BaseNode):
         """路由节点运行，根据PlanningNode的规划结果，给出工具调用方案
         """
         try:
+            plan_text = ""
+            # 如果最后一步完成了，那么就需要强行给定一个提示词让大模型不调用任何工具，结合messages中所有的内容，给出总结性步骤
             # 按顺序取一步的规划，如果这一步的plan的status是pending，则需要调用大模型给出工具调用方案
             plan = state["plan"]
             for step in plan:
-                # 已提取可规划
+                # 已提取未执行规划
                 if step.status == "pending":
                     plan_text = step.description
                     # 更新state中plan的该步骤状态为running
                     step.status = "running"
                     break
 
+            # 给一个执行步骤的logger
+            logger.info(f"正在执行步骤：{plan_text}")
+
             if plan_text:
-                system_message = {
-                    "role":
-                    "system",
-                    "content":
-                    config["configurable"].get("router_system_prompt", "")
-                }
-                user_message = {"role": "user", "content": plan_text}
+                system_message = OpenAIMessage.system_message(
+                    content=config["configurable"].get(
+                        "router_system_prompt",
+                        DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE))
+                user_message = OpenAIMessage.user_message(content=plan_text)
+                # 信息保存进去
                 state["messages"].append(system_message)
                 state["messages"].append(user_message)
+
+                router_messages = state["messages"]
             else:
-                # 没有可规划的步骤，直接结束
+                # 没有可规划的步骤，直接返回，让路由函数决定下一步
                 return state
 
             # 构建请求参数，字典形式
@@ -143,7 +177,7 @@ class RouterNode(BaseNode):
                 "model":
                 config["configurable"].get("router_model", "qwen-plus"),
                 "messages":
-                state["messages"],
+                router_messages,
                 "tool_choice":
                 self.tool_choice,
                 "max_tokens":
@@ -175,7 +209,13 @@ class RouterNode(BaseNode):
                         f"推理过程：{response.choices[0].message.reasoning_content}"
                     )
 
-                state["messages"].append(response.choices[0].message)
+                assistant_message = OpenAIMessage.assistant_message(
+                    content=response.choices[0].message.content,
+                    tool_calls=response.choices[0].message.tool_calls
+                    if response.choices[0].message.tool_calls else None)
+
+                state["messages"].append(assistant_message)
+
                 return state
             else:
                 # 流式请求
@@ -239,6 +279,14 @@ class RouterNode(BaseNode):
                     if collected_tool_calls else None)
 
                 state["messages"].append(assistant_message)
+
+                # 如果不需要工具调用，则将当前步骤的状态设置为completed
+                if not collected_tool_calls:
+                    # 找到当前正在运行的步骤并设置为completed
+                    for step in state["plan"]:
+                        if step.status == "running":
+                            step.status = "completed"
+                            break
 
                 return state
 

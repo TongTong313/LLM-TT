@@ -173,7 +173,7 @@ class PlanningNode(BaseNode):
                     "enable_thinking": self.enable_thinking
                 }
 
-            # 分成流式和非流式两种情况，暂时不考虑工具调用
+            # 分成流式和非流式两种情况
             if not self.stream:  # 非流式请求
                 response = await self.llm_client.chat.completions.create(
                     **request_params)

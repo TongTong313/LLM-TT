@@ -417,8 +417,6 @@ class ToolNode(BaseNode):
             if step.status == "running":
                 break
 
-        logger.info(f"正在执行步骤：{step.description}")
-
         # 如果它没有tool_calls，也认为它完成了
         if not message.get("tool_calls"):
             # 更新state中plan的该步骤状态为已完成
@@ -463,5 +461,9 @@ class ToolNode(BaseNode):
                 assistant_message = OpenAIMessage.assistant_message(
                     content=f"工具{tool_name}执行失败，考虑调用其他工具")
                 state["messages"].append(assistant_message)
+
+                step.status = "failed"
+                step.error = str(e)
+
         # 返回结果
         return state

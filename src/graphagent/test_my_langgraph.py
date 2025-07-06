@@ -4,7 +4,7 @@ from typing import TypedDict, Literal, List, Callable
 from graphagent.node.planning import PlanningNode, PlanningNodeState, PlanningNodeConfig, PlanningNodeRunnableConfig
 from graphagent.node.tool import ToolNode, ToolNodeState, ToolNodeConfig, FunctionTool
 import os
-from graphagent.prompt.system_prompt import DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE, DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE
+from graphagent.prompt.system_prompt import DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE, DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE, DEFAULT_SYSTEM_PROMPT_FOR_SUMMARY_NODE
 import asyncio
 from graphagent.message.openai import OpenAIMessage
 from langchain_core.runnables.config import RunnableConfig
@@ -12,16 +12,20 @@ from graphagent.tool import add, baidu_search, get_current_time
 from graphagent.node.tool import BaseTool
 from graphagent.node.router import RouterNodeState, RouterNodeConfig, RouterNodeRunnableConfig
 from graphagent.node.router import RouterNode, router_function
+from graphagent.node.summary import SummaryNodeState, SummaryNodeConfig, SummaryNodeRunnableConfig
+from graphagent.node.summary import SummaryNode
 
 
 # 1. 预制节点配套预制状态(TypedDict)，用户可以直接使用，也支持自定义
-class State(PlanningNodeState, ToolNodeState, RouterNodeState):
+class State(PlanningNodeState, ToolNodeState, RouterNodeState,
+            SummaryNodeState):
     pass
 
 
 # 2. 用户可以拿到静态预制配置(Pydantic模型)，也可以自己设定，甚至修改参数
 # TypedDict不支持默认值语法
-class ConfigSchema(PlanningNodeConfig, ToolNodeConfig, RouterNodeConfig):
+class ConfigSchema(PlanningNodeConfig, ToolNodeConfig, RouterNodeConfig,
+                   SummaryNodeConfig):
     stream: bool = True
     tools: List[BaseTool | Callable] = [
         FunctionTool(tool=add),
@@ -31,7 +35,9 @@ class ConfigSchema(PlanningNodeConfig, ToolNodeConfig, RouterNodeConfig):
 
 
 # 3. 用户可以拿到预制运行时配置(TypedDict模型)，也可以自己设定，甚至修改参数
-class RunnableConfigSchema(PlanningNodeRunnableConfig):
+class RunnableConfigSchema(PlanningNodeRunnableConfig,
+                           RouterNodeRunnableConfig,
+                           SummaryNodeRunnableConfig):
     pass
 
 
@@ -56,23 +62,30 @@ class MyAgent:
                                       tools=config.tools,
                                       stream=config.stream,
                                       enable_thinking=config.enable_thinking)
+        self.summary_node = SummaryNode(api_key=config.api_key,
+                                        base_url=config.base_url,
+                                        stream=config.stream,
+                                        enable_thinking=config.enable_thinking)
 
     def create_graph(self) -> CompiledStateGraph:
         self.graph = StateGraph(State, config_schema=self.runnable_config)
+        # 添加节点
         self.graph.add_node("planning", self.planning_node)
         self.graph.add_node("tool", self.tool_node)
         self.graph.add_node("router", self.router_node)
+        self.graph.add_node("summary", self.summary_node)
+        # 添加边
         self.graph.add_edge(START, "planning")
         self.graph.add_edge("planning", "router")
         # 使用条件边，让router根据状态决定下一步
         self.graph.add_conditional_edges("router", router_function, {
             "tool": "tool",
             "router": "router",
-            "end": END
+            "summary": "summary"
         })
         # tool节点执行完后回到router节点
         self.graph.add_edge("tool", "router")
-        self.graph.add_edge("router", END)
+        self.graph.add_edge("summary", END)
 
         return self.graph.compile()
 
@@ -94,25 +107,27 @@ if __name__ == "__main__":
             'router_max_tokens': 8000,
             'router_model': 'qwen-plus',
             'router_system_prompt': DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE,
-            'router_temperature': 0.7
+            'router_temperature': 0.7,
+            'summary_max_tokens': 8000,
+            'summary_model': 'qwen-plus',
+            'summary_system_prompt': DEFAULT_SYSTEM_PROMPT_FOR_SUMMARY_NODE,
+            'summary_temperature': 0.7
         }
     }
 
     async def main():
         events = graph.astream(
             {
-                "messages": [
-                    OpenAIMessage.user_message(
-                        content="你好，请帮我生成一份AI领域扩散模型的综述报告")
-                ]
+                "messages":
+                [OpenAIMessage.user_message(content="帮我写一个扩散模型的介绍综述")]
             },
             stream_mode="updates",
             config=runnable_config)
         async for event in events:
             # print(event)
             if "messages" in event:
-                pass
-                # print(event["planning_messages"][-1]["content"])
+                # pass
+                print(event["plan"])
 
         # async for chunk in graph.astream(
         #     {
