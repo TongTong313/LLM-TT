@@ -11,6 +11,7 @@ dependencies = [
     "ipykernel>=6.29.5",
     "langchain>=0.3.26",
     "langgraph>=0.4.8",
+    "langgraph-cli[inmem]>=0.3.4",
     "langsmith>=0.3.45",
     "loguru>=0.7.3",
     "mcp[cli]>=1.7.1",
