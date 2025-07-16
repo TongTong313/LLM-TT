@@ -41,7 +41,7 @@ class RunnableConfigSchema(PlanningNodeRunnableConfig,
     pass
 
 
-# 4. 用户拿到预制节点形成智能体，或直接使用智能体模板
+# # 4. 用户拿到预制节点形成智能体，或直接使用智能体模板
 class MyAgent:
 
     def __init__(self, config: ConfigSchema, runnable_config: RunnableConfig):
@@ -49,23 +49,24 @@ class MyAgent:
         self.runnable_config = runnable_config
         # 配置静态参数
         self.planning_node = PlanningNode(
-            api_key=config.api_key,
-            base_url=config.base_url,
-            tools=config.tools,
-            stream=config.stream,
-            enable_thinking=config.enable_thinking,
-            step_start_token=config.step_start_token,
-            step_end_token=config.step_end_token)
-        self.tool_node = ToolNode(tools=config.tools)
-        self.router_node = RouterNode(api_key=config.api_key,
-                                      base_url=config.base_url,
-                                      tools=config.tools,
-                                      stream=config.stream,
-                                      enable_thinking=config.enable_thinking)
-        self.summary_node = SummaryNode(api_key=config.api_key,
-                                        base_url=config.base_url,
-                                        stream=config.stream,
-                                        enable_thinking=config.enable_thinking)
+            api_key=config().api_key,
+            base_url=config().base_url,
+            tools=config().tools,
+            stream=config().stream,
+            enable_thinking=config().enable_thinking,
+            step_start_token=config().step_start_token,
+            step_end_token=config().step_end_token)
+        self.tool_node = ToolNode(tools=config().tools)
+        self.router_node = RouterNode(api_key=config().api_key,
+                                      base_url=config().base_url,
+                                      tools=config().tools,
+                                      stream=config().stream,
+                                      enable_thinking=config().enable_thinking)
+        self.summary_node = SummaryNode(
+            api_key=config().api_key,
+            base_url=config().base_url,
+            stream=config().stream,
+            enable_thinking=config().enable_thinking)
 
     def create_graph(self) -> CompiledStateGraph:
         self.graph = StateGraph(State, config_schema=self.runnable_config)
@@ -90,56 +91,59 @@ class MyAgent:
         return self.graph.compile()
 
 
-if __name__ == "__main__":
-    # 创建配置实例 - 这是关键修复
-    config = ConfigSchema()
-    runnable_config = RunnableConfigSchema()
+my_agent = MyAgent(ConfigSchema, RunnableConfigSchema)
+graph = my_agent.create_graph()
 
-    my_agent = MyAgent(config, runnable_config)
-    graph = my_agent.create_graph()
+# if __name__ == "__main__":
+#     # 创建配置实例 - 这是关键修复
+#     config = ConfigSchema()
+#     runnable_config = RunnableConfigSchema()
 
-    runnable_config = {
-        'configurable': {
-            'planning_max_tokens': 8000,
-            'planning_model': 'qwen-plus',
-            'planning_system_prompt': DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE,
-            'planning_temperature': 0.7,
-            'router_max_tokens': 8000,
-            'router_model': 'qwen-plus',
-            'router_system_prompt': DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE,
-            'router_temperature': 0.7,
-            'summary_max_tokens': 8000,
-            'summary_model': 'qwen-plus',
-            'summary_system_prompt': DEFAULT_SYSTEM_PROMPT_FOR_SUMMARY_NODE,
-            'summary_temperature': 0.7
-        }
-    }
+#     my_agent = MyAgent(config, runnable_config)
+#     graph = my_agent.create_graph()
 
-    async def main():
-        events = graph.astream(
-            {
-                "messages":
-                [OpenAIMessage.user_message(content="帮我写一个扩散模型的介绍综述")]
-            },
-            stream_mode="updates",
-            config=runnable_config)
-        async for event in events:
-            # print(event)
-            if "messages" in event:
-                # pass
-                print(event["plan"])
+# runnable_config = {
+#     "configurable": {
+#         "planning_max_tokens": 8000,
+#         "planning_model": "qwen-plus",
+#         "planning_system_prompt": DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE,
+#         "planning_temperature": 0.7,
+#         "router_max_tokens": 8000,
+#         "router_model": "qwen-plus",
+#         "router_system_prompt": DEFAULT_SYSTEM_PROMPT_FOR_ROUTER_NODE,
+#         "router_temperature": 0.7,
+#         "summary_max_tokens": 8000,
+#         "summary_model": "qwen-plus",
+#         "summary_system_prompt": DEFAULT_SYSTEM_PROMPT_FOR_SUMMARY_NODE,
+#         "summary_temperature": 0.7
+#     }
+# }
 
-        # async for chunk in graph.astream(
-        #     {
-        #         "planning_messages":
-        #         [OpenAIMessage.user_message(content="你好，请帮我规划一个去北京旅游的行程")]
-        #     },
-        #         stream_mode="updates",
-        #         config=runnable_config):
+#     async def main():
+#         events = graph.astream(
+#             {
+#                 "messages":
+#                 [OpenAIMessage.user_message(content="帮我写一个扩散模型的介绍综述")]
+#             },
+#             stream_mode="updates",
+#             config=runnable_config)
+#         async for event in events:
+#             # print(event)
+#             if "messages" in event:
+#                 # pass
+#                 print(event["plan"])
 
-        #     for event in chunk:
-        #         print(event)
-        #         if "planning_messages" in event:
-        #             print(event["planning_messages"][-1]["content"])
+#         # async for chunk in graph.astream(
+#         #     {
+#         #         "planning_messages":
+#         #         [OpenAIMessage.user_message(content="你好，请帮我规划一个去北京旅游的行程")]
+#         #     },
+#         #         stream_mode="updates",
+#         #         config=runnable_config):
 
-    asyncio.run(main())
+#         #     for event in chunk:
+#         #         print(event)
+#         #         if "planning_messages" in event:
+#         #             print(event["planning_messages"][-1]["content"])
+
+#     asyncio.run(main())

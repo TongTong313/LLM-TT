@@ -152,21 +152,30 @@ class PlanningNode(BaseNode):
         # 这里是不需要考虑工具调用的，只用来做规划，但可能会含有工具，根据工具信息生成规划
         try:
             system_message = {
-                "role": "system",
-                "content": config["configurable"].get("planning_system_prompt")
+                "role":
+                "system",
+                "content":
+                config["configurable"].get(
+                    "planning_system_prompt",
+                    DEFAULT_SYSTEM_PROMPT_FOR_PLANNING_NODE)
             }
             messages = [system_message] + state["messages"]
             # 增加工具，通过工具分析流程
             request_params = {
-                "model": config["configurable"].get("planning_model"),
-                "messages": messages,
+                "model":
+                config["configurable"].get("planning_model", "qwen-plus"),
+                "messages":
+                messages,
                 "temperature":
-                config["configurable"].get("planning_temperature"),
+                config["configurable"].get("planning_temperature", 0.7),
                 "max_tokens":
-                config["configurable"].get("planning_max_tokens"),
-                "stream": self.stream,
-                "tool_choice": self.tool_choice,
-                "tools": self.tool_schema,
+                config["configurable"].get("planning_max_tokens", 1000),
+                "stream":
+                self.stream,
+                "tool_choice":
+                self.tool_choice,
+                "tools":
+                self.tool_schema,
             }
             if self.enable_thinking is not None:
                 request_params["extra_body"] = {
